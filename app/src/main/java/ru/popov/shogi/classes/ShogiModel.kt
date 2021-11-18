@@ -17,7 +17,6 @@ class ShogiModel {
         handBlack.clear()
         handWhite.clear()
 
-        figuresOnBoard.put()
 
     }
 }
