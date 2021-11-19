@@ -58,6 +58,6 @@ class ShogiModel {
         Coordinate(6,1).let { figuresOnBoard.put(it,Gold(Side.WHITE)) }
         Coordinate(4,9).let { figuresOnBoard.put(it,Gold(Side.BLACK)) }
         Coordinate(6,9).let { figuresOnBoard.put(it,Gold(Side.BLACK)) }
-        
+
     }
 }
