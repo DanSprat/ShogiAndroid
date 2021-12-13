@@ -1,14 +1,21 @@
 package ru.popov.shogi.classes
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
+import android.text.Layout
 import android.util.AttributeSet
 import android.view.View
+import android.widget.ImageView
+import android.widget.RelativeLayout
+import android.widget.TextView
 import ru.popov.shogi.R
 
 class ShogiView(context: Context?, attrs: AttributeSet): View(context,attrs) {
     private final val originX = 20f
     private final val originY = 130f
+    var separateLineSize:Int =0
+    var noteSize:Int = 0
     private final val imagesFig = setOf(
         R.drawable.bishop,
         R.drawable.gold,
@@ -20,25 +27,23 @@ class ShogiView(context: Context?, attrs: AttributeSet): View(context,attrs) {
         R.drawable.silver
     )
     private final val bitmaps = HashMap<Int,Bitmap> ()
-    private final val relation = 0.16
+    private final val relation = 0.10
     init {
         loadBitmaps()
     }
+    @SuppressLint("ResourceType")
     override fun onDraw(canvas: Canvas?) {
         val paint = Paint()
-        val viewWidth = this.width;
-        val viewHeight = this.height
 
-        var paddingX:Int = ((viewWidth * 0.1).toInt() / 2)
-        var boardSize:Int = viewWidth - paddingX
-        val noteSize:Int = (boardSize / (10 * relation + 9)).toInt()
-        val separateLineSize:Int = (0.10 * noteSize).toInt()
-        boardSize = 9 * noteSize + 10*separateLineSize
-        paddingX = ((viewWidth - boardSize) / 2 )
+        val attrs = context.obtainStyledAttributes(R.styleable.ShogiView)
+        val noteSize = this.noteSize
+        val separateLineSize:Int = this.separateLineSize
+        val boardSize = 9 * noteSize + 10*separateLineSize
+        val paddingX = ((width - boardSize) / 2 )
 
         val gold = BitmapFactory.decodeResource(resources, R.drawable.gold)
         val board = BitmapFactory.decodeResource(resources,R.drawable.board)
-        val paddingY:Int = (viewHeight - boardSize) / 2
+        val paddingY:Int = (height - boardSize) / 2
 
         val paddingFloatX = paddingX.toFloat()
         val paddingFloatY = paddingY.toFloat()
@@ -53,7 +58,6 @@ class ShogiView(context: Context?, attrs: AttributeSet): View(context,attrs) {
             canvas?.drawRect(paddingFloatX + i*step ,paddingFloatY,paddingFloatX + separateLineSize + i*step,paddingFloatY+boardSize,paint)
             canvas?.drawRect(paddingFloatX,paddingFloatY + i*step,paddingFloatX + boardSize,paddingFloatY +separateLineSize +i* step,paint)
         }
-
     }
 
     private fun loadBitmaps(){

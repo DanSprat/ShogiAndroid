@@ -13,4 +13,11 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+
+    <declare-styleable name="ShogiView">
+        <attr name="noteSize" format="integer"></attr>
+        <attr name="separateLineSize" format="integer"></attr>
+    </declare-styleable>
+
+
 </resources>

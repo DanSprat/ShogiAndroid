@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ru.popov.shogi.classes.ShogiView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
 
-</ru.popov.shogi.classes.ShogiView>
+<RelativeLayout android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout">
+
+    <fragment
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:name="ru.popov.shogi.classes.ShogiFragment"/>
+
+</RelativeLayout>
+
+
+
