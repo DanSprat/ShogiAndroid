@@ -12,30 +12,14 @@ import android.widget.TextView
 import ru.popov.shogi.R
 
 class ShogiView(context: Context?, attrs: AttributeSet): View(context,attrs) {
-    private final val originX = 20f
-    private final val originY = 130f
     var separateLineSize:Int =0
     var noteSize:Int = 0
-    private final val imagesFig = setOf(
-        R.drawable.bishop,
-        R.drawable.gold,
-        R.drawable.king,
-        R.drawable.knight,
-        R.drawable.lance,
-        R.drawable.pawn,
-        R.drawable.rook,
-        R.drawable.silver
-    )
-    private final val bitmaps = HashMap<Int,Bitmap> ()
+
     private final val relation = 0.10
-    init {
-        loadBitmaps()
-    }
-    @SuppressLint("ResourceType")
+
     override fun onDraw(canvas: Canvas?) {
         val paint = Paint()
 
-        val attrs = context.obtainStyledAttributes(R.styleable.ShogiView)
         val noteSize = this.noteSize
         val separateLineSize:Int = this.separateLineSize
         val boardSize = 9 * noteSize + 10*separateLineSize
@@ -49,7 +33,6 @@ class ShogiView(context: Context?, attrs: AttributeSet): View(context,attrs) {
         val paddingFloatY = paddingY.toFloat()
 
         canvas?.drawBitmap(board,null,Rect(paddingX,paddingY,paddingX + boardSize,paddingY+boardSize),paint)
-        canvas?.drawBitmap(gold,null, Rect(0,0,100,100),paint)
         paint.color = Color.rgb(0,0,0)
         paint.style = Paint.Style.FILL
         val step:Int = separateLineSize + noteSize
@@ -60,7 +43,5 @@ class ShogiView(context: Context?, attrs: AttributeSet): View(context,attrs) {
         }
     }
 
-    private fun loadBitmaps(){
-        imagesFig.forEach { bitmaps[it] = BitmapFactory.decodeResource(resources,it) }
-    }
+
 }

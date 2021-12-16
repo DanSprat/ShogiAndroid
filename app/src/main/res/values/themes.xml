@@ -19,5 +19,7 @@
         <attr name="separateLineSize" format="integer"></attr>
     </declare-styleable>
 
+    <attr name="relation" format="float"/>
+
 
 </resources>

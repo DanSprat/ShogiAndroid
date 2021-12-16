@@ -1,17 +1,60 @@
 package ru.popov.shogi.classes.figures
 
+import android.content.Context
+import android.widget.ImageView
+import android.widget.RelativeLayout
+import ru.popov.shogi.R
+import ru.popov.shogi.classes.PieceView
 import ru.popov.shogi.classes.ShogiRules
 
 abstract class Figure {
 
+    companion object {
+        var draws: HashMap<FigureName,Int> = HashMap()
+        init {
+            draws[FigureName.ROOK] = R.drawable.rook
+            draws[FigureName.PAWN] = R.drawable.pawn
+            draws[FigureName.KNIGHT] = R.drawable.knight
+            draws[FigureName.KING] = R.drawable.king
+            draws[FigureName.GOLD] = R.drawable.gold
+            draws[FigureName.BISHOP] = R.drawable.bishop
+            draws[FigureName.SILVER] = R.drawable.silver
+            draws[FigureName.LANCE] = R.drawable.lance
+
+            draws[FigureName.TOKIN] = R.drawable.tokin
+            draws[FigureName.PROMOTED_BISHOP] = R.drawable.promoted_bishop
+            draws[FigureName.PROMOTED_LANCE] = R.drawable.promoted_lance
+            draws[FigureName.PROMOTED_SILVER] = R.drawable.promoted_silver
+            draws[FigureName.PROMOTED_ROOK] = R.drawable.promoted_rook
+            draws[FigureName.PROMOTED_KNIGHT] = R.drawable.promoted_knight
+        }
+    }
+    abstract var row:Int
+    abstract var col:Int
+    var pieceImage: PieceView? = null
     protected abstract var name: String
     protected abstract var abbrName: String
     protected abstract var rules: ShogiRules
     protected abstract var side: Side
     protected abstract val promotable: Boolean
 
+
     protected abstract fun reset()
     protected abstract fun promote(): Boolean
+    fun setImage(context: Context,layout:RelativeLayout,x:Float,y:Float,size:Int){
+        var pieceView = PieceView(context,this)
+        draws[FigureName.PAWN]?.let { pieceView.setImageResource(it) }
+        pieceView.x = x
+        pieceView.y = y
+        var rel = pieceView.height / size
+        if (rel > 1){
+            pieceImage?.layoutParams?.height = pieceImage?.layoutParams?.height?.div(rel)
+            pieceImage?.layoutParams?.width = pieceImage?.layoutParams?.width?.div(rel)
+        } else {
+            pieceImage?.layoutParams?.height = pieceImage?.layoutParams?.height?.times(rel)
+            pieceImage?.layoutParams?.width = pieceImage?.layoutParams?.width?.times(rel)
+        }
+    }
     fun changeSide() {
         reset()
         rules = rules.next()
@@ -20,7 +63,7 @@ abstract class Figure {
 
 }
 
-class Pawn(override var side: Side) : Figure() {
+class Pawn(override var side: Side, override var row: Int, override var col: Int,) : Figure() {
 
     companion object {
         val name: String
@@ -78,7 +121,7 @@ class Silver(override var side: Side) : Figure() {
         val abbrPromotedName: String
             get() = "PS"
 
-    }
+   }
 
     override var name: String = Silver.name
     override var abbrName: String = Silver.abbrName

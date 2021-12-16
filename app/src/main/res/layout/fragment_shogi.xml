@@ -14,7 +14,9 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:id="@+id/layout_SHG"
         tools:context=".classes.ShogiFragment">
+
 
         <ru.popov.shogi.classes.ShogiView
             android:id="@+id/shogi_view"

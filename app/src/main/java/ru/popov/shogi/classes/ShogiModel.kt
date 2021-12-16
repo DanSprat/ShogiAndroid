@@ -1,15 +1,40 @@
 package ru.popov.shogi.classes
 
+import android.content.Context
+import android.widget.ImageView
+import android.widget.RelativeLayout
+import androidx.recyclerview.widget.RecyclerView
+import ru.popov.shogi.R
 import ru.popov.shogi.classes.figures.*
 
 class ShogiModel {
-    private val figuresOnBoard:MutableMap<Coordinate,Figure> = mutableMapOf()
-
+    private val figuresOnBoard:MutableSet<Figure> = mutableSetOf()
     private val handWhite:ArrayList<Figure> = ArrayList()
     private val handBlack:ArrayList<Figure> = ArrayList()
+    private lateinit var context: Context
+    private lateinit var bundleUp:Any
+    private lateinit var bundleDown:Any
+    private var board:Array<Array<Figure?>> = Array<Array<Figure?>>(9) { Array(9) { null } }
 
     init {
         reset()
+    }
+
+
+    private fun transformCoordinateToIndex(mySide: Side,i:Int,y:Int){
+
+    }
+    private fun transformIndexToCoordinate(mySide: Side,i:Int,y:Int){
+
+    }
+    fun connect(context:Context,layout: RelativeLayout,top:Float,left:Float,bundle1:RecyclerView?,bundle2: RecyclerView?,figureSize:Int,mySide: Side,loadBundle:Any?){
+        this.context = context
+        if (loadBundle == null) {
+            reset()
+            for (x in figuresOnBoard){
+                x.setImage(context,layout,)
+            }
+        }
     }
 
     private fun reset(){
@@ -18,46 +43,15 @@ class ShogiModel {
         handWhite.clear()
 
         // Adding pawns
-        for (i in 1..9){
-            Coordinate(i,3).let { figuresOnBoard.put(it,Pawn(Side.WHITE)) }
-            Coordinate(i,7).let { figuresOnBoard.put(it,Pawn(Side.BLACK)) }
+        for (i in 0..8){
+            board[2][i] = Pawn(Side.BLACK).apply { figuresOnBoard.add(this) }
+            board[6][i] = Pawn(Side.WHITE).apply { figuresOnBoard.add(this) }
         }
 
-        // Adding Bishops
-        Coordinate(2,2).let { figuresOnBoard.put(it,Bishop(Side.WHITE)) }
-        Coordinate(8,8).let { figuresOnBoard.put(it,Bishop(Side.BLACK)) }
+    }
 
-        // Adding Rooks
-        Coordinate(8,2).let { figuresOnBoard.put(it,Rook(Side.WHITE)) }
-        Coordinate(2,8).let { figuresOnBoard.put(it,Rook(Side.BLACK)) }
-
-        // Adding Kings
-        Coordinate(5,1).let { figuresOnBoard.put(it,King(Side.WHITE)) }
-        Coordinate(5,9).let { figuresOnBoard.put(it,King(Side.BLACK)) }
-
-        // Adding Lances
-        Coordinate(1,1).let { figuresOnBoard.put(it,Lance(Side.WHITE)) }
-        Coordinate(9,1).let { figuresOnBoard.put(it,Lance(Side.WHITE)) }
-        Coordinate(1,9).let { figuresOnBoard.put(it,Lance(Side.BLACK)) }
-        Coordinate(9,9).let { figuresOnBoard.put(it,Lance(Side.BLACK)) }
-
-        // Adding Knights
-        Coordinate(2,1).let { figuresOnBoard.put(it,Knight(Side.WHITE)) }
-        Coordinate(8,1).let { figuresOnBoard.put(it,Knight(Side.WHITE)) }
-        Coordinate(2,9).let { figuresOnBoard.put(it,Knight(Side.BLACK)) }
-        Coordinate(8,9).let { figuresOnBoard.put(it,Knight(Side.BLACK)) }
-
-        // Adding Silvers
-        Coordinate(3,1).let { figuresOnBoard.put(it,Silver(Side.WHITE)) }
-        Coordinate(7,1).let { figuresOnBoard.put(it,Silver(Side.WHITE)) }
-        Coordinate(3,9).let { figuresOnBoard.put(it,Silver(Side.BLACK)) }
-        Coordinate(7,9).let { figuresOnBoard.put(it,Silver(Side.BLACK)) }
-
-        // Adding Golds
-        Coordinate(4,1).let { figuresOnBoard.put(it,Gold(Side.WHITE)) }
-        Coordinate(6,1).let { figuresOnBoard.put(it,Gold(Side.WHITE)) }
-        Coordinate(4,9).let { figuresOnBoard.put(it,Gold(Side.BLACK)) }
-        Coordinate(6,9).let { figuresOnBoard.put(it,Gold(Side.BLACK)) }
-
+    fun createImageViews(context:Context,left:Int,bottom:Int,delta:Int,size:Int):ArrayList<ImageView> {
+        val pieces:ArrayList<ImageView> = ArrayList();
+        return pieces
     }
 }
