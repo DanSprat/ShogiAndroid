@@ -1,19 +1,19 @@
 package ru.popov.shogi.classes
 
 import android.content.Context
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import androidx.recyclerview.widget.RecyclerView
 import ru.popov.shogi.R
 import ru.popov.shogi.classes.figures.*
 
-class ShogiModel {
+class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, var noteSize:Int, var separateLineSize:Int, var layout: RelativeLayout,
+                 private var context: Context) {
     private val figuresOnBoard:MutableSet<Figure> = mutableSetOf()
     private val handWhite:ArrayList<Figure> = ArrayList()
     private val handBlack:ArrayList<Figure> = ArrayList()
-    private lateinit var context: Context
-    private lateinit var bundleUp:Any
-    private lateinit var bundleDown:Any
+
     private var board:Array<Array<Figure?>> = Array<Array<Figure?>>(9) { Array(9) { null } }
 
     init {
@@ -21,31 +21,43 @@ class ShogiModel {
     }
 
 
-    private fun transformCoordinateToIndex(mySide: Side,i:Int,y:Int){
-
-    }
-    private fun transformIndexToCoordinate(mySide: Side,i:Int,y:Int){
-
-    }
-    fun connect(context:Context,layout: RelativeLayout,top:Float,left:Float,bundle1:RecyclerView?,bundle2: RecyclerView?,figureSize:Int,mySide: Side,loadBundle:Any?){
-        this.context = context
-        if (loadBundle == null) {
-            reset()
-            for (x in figuresOnBoard){
-                x.setImage(context,layout,)
-            }
+    private fun getXScale(orientation: Orientation,top:Float,left:Float):Int{
+        return if (orientation == Orientation.NORMAL) {
+            1
+        } else {
+            -1
         }
     }
 
+    private fun getYScale(orientation: Orientation,top:Float,left:Float):Int{
+        return if (orientation == Orientation.NORMAL) {
+            1
+        } else {
+            -1
+        }
+    }
     private fun reset(){
         figuresOnBoard.clear();
         handBlack.clear()
         handWhite.clear()
 
+        val some = context.resources.getDrawable(R.drawable.king,context.theme)
+        var relation = some.intrinsicHeight.toFloat() / noteSize
+        var layoutParams = if (relation > 1){
+            ViewGroup.LayoutParams((some.intrinsicWidth.toFloat() / relation).toInt(),(some.intrinsicHeight.toFloat() / relation).toInt())
+        } else {
+            ViewGroup.LayoutParams((some.intrinsicWidth.toFloat() * relation).toInt(),(some.intrinsicHeight.toFloat() * relation).toInt())
+        }
+
+        var newTop:Float = top - layoutParams.height / 2
+        var newLeft:Float = left - layoutParams.width / 2
+
+        val delta = separateLineSize + noteSize
+        val scaleX  = getXScale(orientation,top, left)
+        val scaleY = getYScale(orientation, top, left)
         // Adding pawns
         for (i in 0..8){
-            board[2][i] = Pawn(Side.BLACK).apply { figuresOnBoard.add(this) }
-            board[6][i] = Pawn(Side.WHITE).apply { figuresOnBoard.add(this) }
+            board[6][i] = Pawn(Side.WHITE,3,i,false,R.drawable.ic__fu,context,noteSize,left + scaleX * (i-1) * delta,top + scaleY * 5 * delta,layout,layoutParams)
         }
 
     }

@@ -4,8 +4,10 @@ import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Paint
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.DisplayMetrics
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.TextureView
@@ -18,6 +20,7 @@ import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import ru.popov.shogi.MainActivity
 import ru.popov.shogi.R
+import ru.popov.shogi.classes.figures.Orientation
 import ru.popov.shogi.classes.figures.Side
 import ru.popov.shogi.databinding.FragmentShogiBinding
 
@@ -30,12 +33,20 @@ class ShogiFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
-    @SuppressLint("ResourceType")
+    @SuppressLint("ResourceType", "UseCompatLoadingForDrawables")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val relation:Float = 0.1f
+
+        val binding: FragmentShogiBinding = FragmentShogiBinding.inflate(inflater,container,false)
+        val layout:RelativeLayout = binding.root.findViewById(R.id.layout_SHG)
+
+
+       binding.root.viewTreeObserver.addOnGlobalLayoutListener {
+
+       }
         val dm = resources.displayMetrics
         val displayWidth = dm.widthPixels
         this.inflater = inflater
@@ -43,19 +54,34 @@ class ShogiFragment : Fragment() {
         var boardSize:Int = displayWidth - paddingX
         val noteSize:Int = (boardSize / (10 * relation + 9)).toInt()
         val separateLineSize:Int = (relation * noteSize).toInt()
-        shogi = ShogiModel()
 
-        // val rootView: View = inflater.inflate(R.layout.fragment_shogi,null,false)
+        val centerX = 0
+        val centerY = dm.heightPixels / 2
+        boardSize = 10 * separateLineSize + 9 * noteSize
 
 
+        val paddingFromTopLeft = - boardSize / 2 + separateLineSize + noteSize / 2
+        val topX = centerX + paddingFromTopLeft
+        val topY = centerY + paddingFromTopLeft
 
-        val binding: FragmentShogiBinding = FragmentShogiBinding.inflate(inflater,container,false)
+
+        val test = ImageView(activity)
+        test.setImageResource(R.drawable.king)
+        test.x = centerX.toFloat()
+        test.y = centerY.toFloat()
+
+
         binding.noteSize = noteSize
         binding.separateLineSize = separateLineSize
 
-        val layout:RelativeLayout = binding.root.findViewById(R.id.layout_SHG)
-        val game = ShogiModel()
-        context?.let { game.connect(it,layout,100f,100f,null,null,noteSize,Side.WHITE,null) }
+
+
+        layout.addView(test)
+        val game = activity?.let {
+            ShogiModel(Orientation.NORMAL,topY.toFloat(),topX.toFloat(),noteSize, separateLineSize, layout,
+                it
+            )
+        }
         return binding.root
     }
 
