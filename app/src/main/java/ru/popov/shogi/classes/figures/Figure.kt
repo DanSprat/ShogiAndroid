@@ -502,52 +502,125 @@ class Lance(override var side: Side, override var row: Int, override var col: In
 
 }
 
-//class Knight(override var side: Side) : Figure() {
-//
-//    companion object {
-//        val name: String
-//            get() = "Knight"
-//        val promotedName: String
-//            get() = "Promoted Knight"
-//        val abbrName: String
-//            get() = "N"
-//        val abbrPromotedName: String
-//            get() = "PN"
-//
-//    }
-//
-//    override var name: String = Knight.name
-//    override var abbrName: String = Knight.abbrName
-//    override val promotable: Boolean = true
-//    override var rules: ShogiRules = if (side == Side.WHITE) {
-//        ShogiRules.KNIGHT_WHITE
-//    } else {
-//        ShogiRules.KNIGHT_BLACK
-//    }
-//
-//    override fun promote(): Boolean {
-//        name = promotedName
-//        abbrName = abbrPromotedName
-//        rules = if (side == Side.WHITE) {
-//            ShogiRules.GOLD_WHITE
-//        } else {
-//            ShogiRules.GOLD_BLACK
-//        }
-//        return true
-//    }
-//
-//    override fun reset() {
-//        name = Knight.name
-//        abbrName = Knight.abbrName
-//        rules = if (side == Side.WHITE) {
-//            ShogiRules.KNIGHT_WHITE
-//        } else {
-//            ShogiRules.KNIGHT_BLACK
-//        }
-//    }
-//
-//}
-//
+class Knight(override var side: Side, override var row: Int, override var col: Int,
+             override var promoted: Boolean, override val appInfo: AppInfo, x:Float, y:Float,
+             override val orientation: Orientation) : Figure() {
+
+    companion object {
+        val name: FigureName
+            get() = FigureName.KNIGHT
+        val promotedName: FigureName
+            get() = FigureName.KNIGHT
+        val abbrName: String
+            get() = "N"
+        val abbrPromotedName: String
+            get() = "PN"
+
+    }
+
+    override lateinit var pieceImage: PieceView
+    private var commonID:Int = 0
+    private var promotedID:Int = 0
+    override var name: FigureName = FigureName.KNIGHT
+    override var abbrName: String = Knight.abbrName
+    override val promotable: Boolean = true
+    override var rules: ShogiRules = if (side == Side.WHITE) {
+        ShogiRules.KNIGHT_WHITE
+    } else {
+        ShogiRules.KNIGHT_BLACK
+    }
+
+    init {
+        var pieceView = PieceView(appInfo.context,this)
+
+        if (orientation == Orientation.NORMAL) {
+            if (side == Side.WHITE) {
+                commonID = R.drawable.knight_0
+                promotedID = R.drawable.p_knight_0
+            } else {
+                commonID = R.drawable.knight_1
+                promotedID = R.drawable.p_knight_1
+            }
+        } else {
+            if (side == Side.WHITE) {
+                commonID = R.drawable.knight_1
+                promotedID = R.drawable.p_knight_1
+            } else {
+                commonID = R.drawable.knight_0
+                promotedID = R.drawable.p_knight_0
+            }
+        }
+        pieceView.setImageResource(commonID)
+        pieceView.layoutParams = appInfo.layoutParams
+        pieceView.x = x
+        pieceView.y = y
+
+        this.name = FigureName.KNIGHT
+        if(promoted){
+            this.name = Pawn.promotedName
+            abbrName = Pawn.abbrPromotedName
+            rules = if (side == Side.WHITE){
+                ShogiRules.GOLD_WHITE
+            } else {
+                ShogiRules.GOLD_BLACK
+            }
+        } else {
+            this.name = Knight.name
+            abbrName = Knight.abbrName
+            rules = if (side == Side.WHITE){
+                ShogiRules.PAWN_WHITE
+            } else {
+                ShogiRules.PAWN_BLACK
+            }
+        }
+        pieceImage = pieceView
+        appInfo.layout.addView(pieceView)
+    }
+    override fun changeImages() {
+        if (orientation == Orientation.NORMAL) {
+            if (side == Side.WHITE) {
+                commonID = R.drawable.knight_1
+                promotedID = R.drawable.p_knight_1
+            } else {
+                commonID = R.drawable.knight_0
+                promotedID = R.drawable.p_knight_0
+            }
+        } else {
+            if (side == Side.WHITE) {
+                commonID = R.drawable.knight_1
+                promotedID = R.drawable.p_knight_1
+            } else {
+                commonID = R.drawable.knight_0
+                promotedID = R.drawable.p_knight_0
+            }
+        }
+    }
+
+
+
+    override fun promote(): Boolean {
+        name = promotedName
+        abbrName = abbrPromotedName
+        rules = if (side == Side.WHITE) {
+            ShogiRules.GOLD_WHITE
+        } else {
+            ShogiRules.GOLD_BLACK
+        }
+        return true
+    }
+
+    override fun reset() {
+        name = Knight.name
+        abbrName = Knight.abbrName
+        rules = if (side == Side.WHITE) {
+            ShogiRules.KNIGHT_WHITE
+        } else {
+            ShogiRules.KNIGHT_BLACK
+        }
+    }
+
+}
+
 //class Rook(override var side: Side) : Figure() {
 //
 //    companion object {

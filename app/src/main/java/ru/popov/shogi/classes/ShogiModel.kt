@@ -48,7 +48,6 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
         val scaleY = getYScale(orientation, top, left)
         // Adding pawns
         for (i in 0..8){
-            // board[6][i] = Pawn(Side.WHITE,3,i,false,R.drawable.pawn_0,context,noteSize,left + scaleX * (i) * delta,top + scaleY * 6 * delta,layout,layoutParams)
             boardShogi[i+1,3] = Pawn(Side.WHITE,3,i+1,false,appInfo ,left + scaleX * (i) * delta,top + scaleY * 6 * delta,orientation)
             boardShogi[i+1,7] = Pawn(Side.BLACK,7,i+1,false, appInfo,left + scaleX * (i) * delta,top + scaleY * 2 * delta,orientation)
         }
@@ -74,6 +73,14 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
         //Adding Kings
         boardShogi[5,1] = King(Side.WHITE,1,5,appInfo,left + scaleX * 4 *delta,top+scaleY*8*delta,orientation)
         boardShogi[5,9] = King(Side.BLACK,9,5,appInfo,left + scaleX * 4 *delta,top+scaleY*0*delta,orientation)
+
+        //Adding Knights
+        boardShogi[2,1] = Knight(Side.WHITE,1,2,false,appInfo,left + scaleX * 1 *delta,top+scaleY*8*delta,orientation)
+        boardShogi[8,1] = Knight(Side.WHITE,1,8,false,appInfo,left + scaleX * 7 *delta,top+scaleY*8*delta,orientation)
+        boardShogi[2,9] = Knight(Side.WHITE,9,2,false,appInfo,left + scaleX * 1 *delta,top+scaleY*0*delta,orientation)
+        boardShogi[8,9] = Knight(Side.WHITE,9,8,false,appInfo,left + scaleX * 7 *delta,top+scaleY*0*delta,orientation)
+
+        //
 
     }
 

@@ -38,8 +38,10 @@ class ShogiFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         val relation:Float = 0.1f
         val binding: FragmentShogiBinding = FragmentShogiBinding.inflate(inflater,container,false)
+
         val layout:RelativeLayout = binding.root.findViewById(R.id.layout_SHG)
 
         val dm = resources.displayMetrics
@@ -49,6 +51,9 @@ class ShogiFragment : Fragment() {
         var boardSize:Int = displayWidth - paddingX
         val noteSize:Int = (boardSize / (10 * relation + 9)).toInt()
         val separateLineSize:Int = (relation * noteSize).toInt()
+
+        Log.i("MYTAG","Width Fragment " + dm.widthPixels)
+        Log.i("MYTAG","Height Fragment " + dm.heightPixels)
 
         val centerX = dm.widthPixels / 2
         val centerY = dm.heightPixels / 2
@@ -72,9 +77,11 @@ class ShogiFragment : Fragment() {
         return binding.root
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
     }
+
 
     @SuppressLint("ResourceType")
     override fun onStart() {
