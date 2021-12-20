@@ -77,10 +77,16 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
         //Adding Knights
         boardShogi[2,1] = Knight(Side.WHITE,1,2,false,appInfo,left + scaleX * 1 *delta,top+scaleY*8*delta,orientation)
         boardShogi[8,1] = Knight(Side.WHITE,1,8,false,appInfo,left + scaleX * 7 *delta,top+scaleY*8*delta,orientation)
-        boardShogi[2,9] = Knight(Side.WHITE,9,2,false,appInfo,left + scaleX * 1 *delta,top+scaleY*0*delta,orientation)
-        boardShogi[8,9] = Knight(Side.WHITE,9,8,false,appInfo,left + scaleX * 7 *delta,top+scaleY*0*delta,orientation)
+        boardShogi[2,9] = Knight(Side.BLACK,9,2,false,appInfo,left + scaleX * 1 *delta,top+scaleY*0*delta,orientation)
+        boardShogi[8,9] = Knight(Side.BLACK,9,8,false,appInfo,left + scaleX * 7 *delta,top+scaleY*0*delta,orientation)
 
-        //
+        //Adding Rooks
+        boardShogi[8,2] = Rook(Side.WHITE,2,8,false,appInfo,left + scaleX * 7 *delta,top+scaleY*7*delta,orientation)
+        boardShogi[2,8] = Rook(Side.BLACK,8,2,false,appInfo,left + scaleX * 1 *delta,top+scaleY*1*delta,orientation)
+
+        //Adding Bishops
+        boardShogi[2,2] = Bishop(Side.WHITE,2,2,false,appInfo,left + scaleX * 1 *delta,top+scaleY*7*delta,orientation)
+        boardShogi[8,8] = Bishop(Side.BLACK,8,8,false,appInfo,left + scaleX * 7 *delta,top+scaleY*1*delta,orientation)
 
     }
 

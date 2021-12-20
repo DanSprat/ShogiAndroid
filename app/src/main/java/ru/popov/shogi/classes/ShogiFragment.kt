@@ -38,7 +38,7 @@ class ShogiFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
+        val scaleNote:Float = 0.9f
         val relation:Float = 0.1f
         val binding: FragmentShogiBinding = FragmentShogiBinding.inflate(inflater,container,false)
 
@@ -61,7 +61,7 @@ class ShogiFragment : Fragment() {
 
         val test1 = resources.getDrawable(R.drawable.rook_0, context?.theme)
 
-        val rel:Float = test1.intrinsicHeight.toFloat() / noteSize
+        val rel:Float = test1.intrinsicHeight.toFloat() / (noteSize * scaleNote)
         val layoutParams: ViewGroup.LayoutParams = ViewGroup.LayoutParams((test1.intrinsicWidth / rel).toInt(),(test1.intrinsicHeight / rel).toInt())
         val topX = (displayWidth - boardSize) / 2 + separateLineSize + noteSize / 2 - layoutParams.width / 2
         val topY = (dm.heightPixels - boardSize) / 2 + separateLineSize + noteSize / 2 - layoutParams.height / 2

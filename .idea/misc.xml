@@ -3,13 +3,16 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Users/Administrator/AndroidStudioProjects/ShogiAndroid/app/src/main/res/drawable/knight_0.xml" value="0.13055555555555556" />
-        <entry key="..\:/Users/Administrator/AndroidStudioProjects/ShogiAndroid/app/src/main/res/drawable/knight_1.xml" value="0.13055555555555556" />
-        <entry key="..\:/Users/Administrator/AndroidStudioProjects/ShogiAndroid/app/src/main/res/layout/activity_main.xml" value="0.20520833333333333" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Shogi/app/src/main/res/drawable/bishop.xml" value="0.22135416666666666" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Shogi/app/src/main/res/drawable/gold.xml" value="0.22135416666666666" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Shogi/app/src/main/res/drawable/gold_0.xml" value="0.22135416666666666" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Shogi/app/src/main/res/drawable/gold_1.xml" value="0.22135416666666666" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Shogi/app/src/main/res/drawable/king.xml" value="0.22" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Shogi/app/src/main/res/drawable/knight.xml" value="0.22135416666666666" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Shogi/app/src/main/res/drawable/knight_0.xml" value="0.22135416666666666" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Shogi/app/src/main/res/drawable/knight_1.xml" value="0.25" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Shogi/app/src/main/res/drawable/rook_0.xml" value="0.22135416666666666" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Shogi/app/src/main/res/drawable/rook_1.xml" value="0.22135416666666666" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Shogi/app/src/main/res/drawable/test.xml" value="0.22135416666666666" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Shogi/app/src/main/res/layout/activity_main.xml" value="0.19114583333333332" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Shogi/app/src/main/res/layout/fragment_shogi.xml" value="0.1" />

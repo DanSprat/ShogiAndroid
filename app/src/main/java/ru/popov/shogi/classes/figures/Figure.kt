@@ -524,11 +524,7 @@ class Knight(override var side: Side, override var row: Int, override var col: I
     override var name: FigureName = FigureName.KNIGHT
     override var abbrName: String = Knight.abbrName
     override val promotable: Boolean = true
-    override var rules: ShogiRules = if (side == Side.WHITE) {
-        ShogiRules.KNIGHT_WHITE
-    } else {
-        ShogiRules.KNIGHT_BLACK
-    }
+    override lateinit var rules: ShogiRules
 
     init {
         var pieceView = PieceView(appInfo.context,this)
@@ -543,11 +539,11 @@ class Knight(override var side: Side, override var row: Int, override var col: I
             }
         } else {
             if (side == Side.WHITE) {
-                commonID = R.drawable.knight_1
-                promotedID = R.drawable.p_knight_1
-            } else {
                 commonID = R.drawable.knight_0
                 promotedID = R.drawable.p_knight_0
+            } else {
+                commonID = R.drawable.knight_1
+                promotedID = R.drawable.p_knight_1
             }
         }
         pieceView.setImageResource(commonID)
@@ -557,8 +553,8 @@ class Knight(override var side: Side, override var row: Int, override var col: I
 
         this.name = FigureName.KNIGHT
         if(promoted){
-            this.name = Pawn.promotedName
-            abbrName = Pawn.abbrPromotedName
+            this.name = Knight.promotedName
+            abbrName = Knight.abbrPromotedName
             rules = if (side == Side.WHITE){
                 ShogiRules.GOLD_WHITE
             } else {
@@ -621,98 +617,225 @@ class Knight(override var side: Side, override var row: Int, override var col: I
 
 }
 
-//class Rook(override var side: Side) : Figure() {
-//
-//    companion object {
-//        val name: String
-//            get() = "Rook"
-//        val promotedName: String
-//            get() = "Dragon"
-//        val abbrName: String
-//            get() = "R"
-//        val abbrPromotedName: String
-//            get() = "+R"
-//
-//    }
-//
-//    override var name: String = Rook.name
-//    override var abbrName: String = Rook.abbrName
-//    override val promotable: Boolean = true
-//    override var rules: ShogiRules = if (side == Side.WHITE) {
-//        ShogiRules.ROOK
-//    } else {
-//        ShogiRules.ROOK
-//    }
-//
-//    override fun promote(): Boolean {
-//        name = promotedName
-//        abbrName = abbrPromotedName
-//        rules = if (side == Side.WHITE) {
-//            ShogiRules.DRAGON
-//        } else {
-//            ShogiRules.DRAGON
-//        }
-//        return true
-//    }
-//
-//    override fun reset() {
-//        name = Rook.name
-//        abbrName = Rook.abbrName
-//        rules = if (side == Side.WHITE) {
-//            ShogiRules.ROOK
-//        } else {
-//            ShogiRules.ROOK
-//        }
-//    }
-//
-//}
-//
-//class Bishop(override var side: Side) : Figure() {
-//
-//    companion object {
-//        val name: String
-//            get() = "Bishop"
-//        val promotedName: String
-//            get() = "Horse"
-//        val abbrName: String
-//            get() = "B"
-//        val abbrPromotedName: String
-//            get() = "+B"
-//
-//    }
-//
-//    override var name: String = Bishop.name
-//    override var abbrName: String = Bishop.abbrName
-//    override val promotable: Boolean = true
-//    override var rules: ShogiRules = if (side == Side.WHITE) {
-//        ShogiRules.BISHOP
-//    } else {
-//        ShogiRules.BISHOP
-//    }
-//
-//    override fun promote(): Boolean {
-//        name = promotedName
-//        abbrName = abbrPromotedName
-//        rules = if (side == Side.WHITE) {
-//            ShogiRules.HORSE
-//        } else {
-//            ShogiRules.HORSE
-//        }
-//        return true
-//    }
-//
-//    override fun reset() {
-//        name = Silver.name
-//        abbrName = Silver.abbrName
-//        rules = if (side == Side.WHITE) {
-//            ShogiRules.BISHOP
-//        } else {
-//            ShogiRules.BISHOP
-//        }
-//    }
-//
-//}
-//
+class Rook(override var side: Side, override var row: Int, override var col: Int,
+           override var promoted: Boolean, override val appInfo: AppInfo, x:Float, y:Float,
+           override val orientation: Orientation) : Figure() {
+
+    companion object {
+        val name: FigureName
+            get() = FigureName.ROOK
+        val promotedName: FigureName
+            get() = FigureName.PROMOTED_ROOK
+        val abbrName: String
+            get() = "R"
+        val abbrPromotedName: String
+            get() = "+R"
+
+    }
+
+    override lateinit var pieceImage: PieceView
+    private var commonID:Int = 0
+    private var promotedID:Int = 0
+    override var name: FigureName = Rook.name
+    override var abbrName: String = Rook.abbrName
+    override val promotable: Boolean = true
+
+    override fun changeImages() {
+        if (orientation == Orientation.NORMAL) {
+            if (side == Side.WHITE) {
+                commonID = R.drawable.rook_1
+                promotedID = R.drawable.p_rook_1
+            } else {
+                commonID = R.drawable.rook_0
+                promotedID = R.drawable.p_rook_0
+            }
+        } else {
+            if (side == Side.WHITE) {
+                commonID = R.drawable.rook_1
+                promotedID = R.drawable.p_rook_1
+            } else {
+                commonID = R.drawable.rook_0
+                promotedID = R.drawable.p_rook_0
+            }
+        }
+    }
+
+    override lateinit var rules: ShogiRules
+
+   init {
+       var pieceView = PieceView(appInfo.context,this)
+
+       if (orientation == Orientation.NORMAL) {
+           if (side == Side.WHITE) {
+               commonID = R.drawable.rook_0
+               promotedID = R.drawable.p_rook_0
+           } else {
+               commonID = R.drawable.rook_1
+               promotedID = R.drawable.p_rook_1
+           }
+       } else {
+           if (side == Side.WHITE) {
+               commonID = R.drawable.rook_0
+               promotedID = R.drawable.p_rook_1
+           } else {
+               commonID = R.drawable.rook_1
+               promotedID = R.drawable.p_rook_1
+           }
+       }
+       pieceView.setImageResource(commonID)
+       pieceView.layoutParams = appInfo.layoutParams
+       pieceView.x = x
+       pieceView.y = y
+
+       if(promoted){
+           this.name = Rook.promotedName
+           abbrName = Rook.abbrPromotedName
+           rules = if (side == Side.WHITE){
+               ShogiRules.DRAGON
+           } else {
+               ShogiRules.DRAGON
+           }
+       } else {
+           this.name = Rook.name
+           abbrName = Rook.abbrName
+           rules = if (side == Side.WHITE){
+               ShogiRules.ROOK
+           } else {
+               ShogiRules.ROOK
+           }
+       }
+       pieceImage = pieceView
+       appInfo.layout.addView(pieceView)
+   }
+
+    override fun promote(): Boolean {
+        name = promotedName
+        abbrName = abbrPromotedName
+        rules = if (side == Side.WHITE) {
+            ShogiRules.DRAGON
+        } else {
+            ShogiRules.DRAGON
+        }
+        return true
+    }
+
+    override fun reset() {
+        name = Rook.name
+        abbrName = Rook.abbrName
+        rules = if (side == Side.WHITE) {
+            ShogiRules.ROOK
+        } else {
+            ShogiRules.ROOK
+        }
+    }
+
+}
+
+class Bishop(override var side: Side, override var row: Int, override var col: Int,
+             override var promoted: Boolean, override val appInfo: AppInfo, x:Float, y:Float,
+             override val orientation: Orientation) : Figure() {
+
+    companion object {
+        val name: FigureName
+            get() = FigureName.BISHOP
+        val promotedName: FigureName
+            get() = FigureName.PROMOTED_BISHOP
+        val abbrName: String
+            get() = "B"
+        val abbrPromotedName: String
+            get() = "+B"
+
+    }
+
+    override lateinit var pieceImage: PieceView
+    private var commonID:Int = 0
+    private var promotedID:Int = 0
+    override var name: FigureName = Bishop.name
+    override var abbrName: String = Bishop.abbrName
+    override val promotable: Boolean = true
+    override fun changeImages() {
+        if (orientation == Orientation.NORMAL) {
+            if (side == Side.BLACK) {
+                commonID = R.drawable.bishop_0
+                promotedID = R.drawable.p_bishop_0
+            } else {
+                commonID = R.drawable.bishop_1
+                promotedID = R.drawable.p_bishop_1
+            }
+        } else {
+            if (side == Side.WHITE) {
+                commonID = R.drawable.bishop_0
+                promotedID = R.drawable.p_bishop_0
+            } else {
+                commonID = R.drawable.bishop_1
+                promotedID = R.drawable.p_bishop_1
+            }
+        }
+    }
+
+    override lateinit var rules: ShogiRules
+
+    init {
+        var pieceView = PieceView(appInfo.context,this)
+
+        if (orientation == Orientation.NORMAL) {
+            if (side == Side.WHITE) {
+                commonID = R.drawable.bishop_0
+                promotedID = R.drawable.p_bishop_0
+            } else {
+                commonID = R.drawable.bishop_1
+                promotedID = R.drawable.p_bishop_1
+            }
+        } else {
+            if (side == Side.BLACK) {
+                commonID = R.drawable.bishop_0
+                promotedID = R.drawable.p_bishop_0
+            } else {
+                commonID = R.drawable.bishop_1
+                promotedID = R.drawable.p_bishop_1
+            }
+        }
+        pieceView.setImageResource(commonID)
+        pieceView.layoutParams = appInfo.layoutParams
+        pieceView.x = x
+        pieceView.y = y
+
+        if(promoted){
+            this.name = Bishop.promotedName
+            abbrName = Bishop.abbrPromotedName
+            rules = ShogiRules.HORSE
+        } else {
+            this.name = Bishop.name
+            abbrName = Bishop.abbrName
+            rules = ShogiRules.BISHOP
+        }
+        pieceImage = pieceView
+        appInfo.layout.addView(pieceView)
+    }
+
+    override fun promote(): Boolean {
+        name = promotedName
+        abbrName = abbrPromotedName
+        rules = if (side == Side.WHITE) {
+            ShogiRules.HORSE
+        } else {
+            ShogiRules.HORSE
+        }
+        return true
+    }
+
+    override fun reset() {
+        name = Silver.name
+        abbrName = Silver.abbrName
+        rules = if (side == Side.WHITE) {
+            ShogiRules.BISHOP
+        } else {
+            ShogiRules.BISHOP
+        }
+    }
+
+}
+
 class King(override var side: Side, override var row: Int, override var col: Int,
            override val appInfo: AppInfo, x:Float, y:Float,
            override val orientation: Orientation) : Figure() {
