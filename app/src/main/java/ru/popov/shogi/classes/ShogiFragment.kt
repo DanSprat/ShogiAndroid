@@ -39,14 +39,9 @@ class ShogiFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val relation:Float = 0.1f
-
         val binding: FragmentShogiBinding = FragmentShogiBinding.inflate(inflater,container,false)
         val layout:RelativeLayout = binding.root.findViewById(R.id.layout_SHG)
 
-
-       binding.root.viewTreeObserver.addOnGlobalLayoutListener {
-
-       }
         val dm = resources.displayMetrics
         val displayWidth = dm.widthPixels
         this.inflater = inflater
@@ -55,31 +50,23 @@ class ShogiFragment : Fragment() {
         val noteSize:Int = (boardSize / (10 * relation + 9)).toInt()
         val separateLineSize:Int = (relation * noteSize).toInt()
 
-        val centerX = 0
+        val centerX = dm.widthPixels / 2
         val centerY = dm.heightPixels / 2
         boardSize = 10 * separateLineSize + 9 * noteSize
 
+        val test1 = resources.getDrawable(R.drawable.rook_0, context?.theme)
 
-        val paddingFromTopLeft = - boardSize / 2 + separateLineSize + noteSize / 2
-        val topX = centerX + paddingFromTopLeft
-        val topY = centerY + paddingFromTopLeft
-
-
-        val test = ImageView(activity)
-        test.setImageResource(R.drawable.king)
-        test.x = centerX.toFloat()
-        test.y = centerY.toFloat()
-
+        val rel:Float = test1.intrinsicHeight.toFloat() / noteSize
+        val layoutParams: ViewGroup.LayoutParams = ViewGroup.LayoutParams((test1.intrinsicWidth / rel).toInt(),(test1.intrinsicHeight / rel).toInt())
+        val topX = (displayWidth - boardSize) / 2 + separateLineSize + noteSize / 2 - layoutParams.width / 2
+        val topY = (dm.heightPixels - boardSize) / 2 + separateLineSize + noteSize / 2 - layoutParams.height / 2
 
         binding.noteSize = noteSize
         binding.separateLineSize = separateLineSize
 
-
-
-        layout.addView(test)
         val game = activity?.let {
             ShogiModel(Orientation.NORMAL,topY.toFloat(),topX.toFloat(),noteSize, separateLineSize, layout,
-                it
+                it,layoutParams
             )
         }
         return binding.root

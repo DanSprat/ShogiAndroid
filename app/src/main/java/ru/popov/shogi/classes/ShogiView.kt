@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.*
 import android.text.Layout
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.RelativeLayout
@@ -20,17 +21,21 @@ class ShogiView(context: Context?, attrs: AttributeSet): View(context,attrs) {
     override fun onDraw(canvas: Canvas?) {
         val paint = Paint()
 
+        Log.i("MYTAG",width.toString())
+        Log.i("MYTAG",height.toString())
         val noteSize = this.noteSize
         val separateLineSize:Int = this.separateLineSize
         val boardSize = 9 * noteSize + 10*separateLineSize
         val paddingX = ((width - boardSize) / 2 )
 
-        val gold = BitmapFactory.decodeResource(resources, R.drawable.gold)
         val board = BitmapFactory.decodeResource(resources,R.drawable.board)
         val paddingY:Int = (height - boardSize) / 2
 
         val paddingFloatX = paddingX.toFloat()
         val paddingFloatY = paddingY.toFloat()
+
+        Log.i("MYTAG", "NewTOP: $paddingY")
+        Log.i("MYTAG", "NewLeft: $paddingX")
 
         canvas?.drawBitmap(board,null,Rect(paddingX,paddingY,paddingX + boardSize,paddingY+boardSize),paint)
         paint.color = Color.rgb(0,0,0)
