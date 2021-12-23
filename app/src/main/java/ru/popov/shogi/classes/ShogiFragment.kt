@@ -52,11 +52,7 @@ class ShogiFragment : Fragment() {
         val noteSize:Int = (boardSize / (10 * relation + 9)).toInt()
         val separateLineSize:Int = (relation * noteSize).toInt()
 
-        Log.i("MYTAG","Width Fragment " + dm.widthPixels)
-        Log.i("MYTAG","Height Fragment " + dm.heightPixels)
 
-        val centerX = dm.widthPixels / 2
-        val centerY = dm.heightPixels / 2
         boardSize = 10 * separateLineSize + 9 * noteSize
 
         val test1 = resources.getDrawable(R.drawable.rook_0, context?.theme)
@@ -68,6 +64,8 @@ class ShogiFragment : Fragment() {
 
         binding.noteSize = noteSize
         binding.separateLineSize = separateLineSize
+        binding.boardSize = boardSize
+
 
         val game = activity?.let {
             ShogiModel(Orientation.NORMAL,topY.toFloat(),topX.toFloat(),noteSize, separateLineSize, layout,

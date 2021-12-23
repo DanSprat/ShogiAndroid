@@ -8,7 +8,6 @@
         <variable name="separateLineSize" type="Integer" />
         <variable name="boardSize" type="Integer" />
 
-
     </data>
 
     <RelativeLayout
@@ -17,13 +16,21 @@
         android:id="@+id/layout_SHG"
         tools:context=".classes.ShogiFragment">
 
-
         <ru.popov.shogi.classes.ShogiView
             android:id="@+id/shogi_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:separateLineSize="@{separateLineSize}"
             app:noteSize="@{noteSize}"/>
+
+        <ru.popov.shogi.classes.ViewMoves
+            android:id="@+id/available_moves"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:cellSize="@{noteSize}"
+            app:boardSize="@{boardSize}"
+            app:lineSize="@{separateLineSize}"
+           />
 
     </RelativeLayout>
 </layout>

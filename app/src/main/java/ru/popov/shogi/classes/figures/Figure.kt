@@ -1,6 +1,8 @@
 package ru.popov.shogi.classes.figures
 
 import android.content.Context
+import android.util.Log
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RelativeLayout
@@ -14,13 +16,15 @@ abstract class Figure {
     companion object {
         var draws: HashMap<FigureName,Int> = HashMap()
     }
+
+    protected abstract var listener:View.OnClickListener
     abstract var row:Int
     abstract var col:Int
     abstract var pieceImage: PieceView
     protected abstract var name: FigureName
     protected abstract var abbrName: String
-    protected abstract var rules: ShogiRules
-    protected abstract var side: Side
+    abstract var rules: ShogiRules
+    abstract var side: Side
     protected abstract val promotable: Boolean
     protected abstract var promoted: Boolean
     protected abstract val appInfo:AppInfo
@@ -40,7 +44,7 @@ abstract class Figure {
 
 class Pawn(override var side: Side, override var row: Int, override var col: Int,
            override var promoted: Boolean, override val appInfo: AppInfo, x:Float, y:Float,
-           override val orientation: Orientation) : Figure() {
+           override val orientation: Orientation, override var listener: View.OnClickListener) : Figure() {
 
     override lateinit var pieceImage: PieceView
     override lateinit var abbrName: String
@@ -51,7 +55,7 @@ class Pawn(override var side: Side, override var row: Int, override var col: Int
 
     init {
         var pieceView = PieceView(appInfo.context,this)
-
+        pieceView.setOnClickListener(listener)
         if (orientation == Orientation.NORMAL) {
             if (side == Side.WHITE) {
                 commonID = R.drawable.pawn_0
@@ -166,7 +170,7 @@ class Pawn(override var side: Side, override var row: Int, override var col: Int
 
 class Silver(override var side: Side, override var row: Int, override var col: Int,
              override var promoted: Boolean, override val appInfo: AppInfo, x:Float, y:Float,
-             override val orientation: Orientation) : Figure() {
+             override val orientation: Orientation,override var listener: View.OnClickListener) : Figure() {
 
     companion object {
         val name: FigureName
@@ -223,7 +227,7 @@ class Silver(override var side: Side, override var row: Int, override var col: I
 
     init {
         var pieceView = PieceView(appInfo.context,this)
-
+        pieceView.setOnClickListener(listener)
         if (orientation == Orientation.NORMAL) {
             if (side == Side.WHITE) {
                 commonID = R.drawable.silver_0
@@ -296,7 +300,7 @@ class Silver(override var side: Side, override var row: Int, override var col: I
 
 class Gold(override var side: Side, override var row: Int, override var col: Int,
            override val appInfo: AppInfo, x:Float, y:Float,
-           override val orientation: Orientation) : Figure() {
+           override val orientation: Orientation,override var listener: View.OnClickListener) : Figure() {
 
 
 
@@ -331,7 +335,7 @@ class Gold(override var side: Side, override var row: Int, override var col: Int
 
     init {
         var pieceView = PieceView(appInfo.context,this)
-
+        pieceView.setOnClickListener(listener)
         commonID = if (orientation == Orientation.NORMAL) {
             if (side == Side.WHITE) {
                 R.drawable.gold_0
@@ -382,7 +386,7 @@ class Gold(override var side: Side, override var row: Int, override var col: Int
 
 class Lance(override var side: Side, override var row: Int, override var col: Int,
             override var promoted: Boolean, override val appInfo: AppInfo, x:Float, y:Float,
-            override val orientation: Orientation) : Figure() {
+            override val orientation: Orientation,override var listener: View.OnClickListener) : Figure() {
 
     private var commonID:Int = 0
     private var promotedID:Int = 0
@@ -420,7 +424,7 @@ class Lance(override var side: Side, override var row: Int, override var col: In
 
     init {
         var pieceView = PieceView(appInfo.context,this)
-
+        pieceView.setOnClickListener(listener)
         if (orientation == Orientation.NORMAL) {
             if (side == Side.WHITE) {
                 commonID = R.drawable.lance_0
@@ -504,7 +508,7 @@ class Lance(override var side: Side, override var row: Int, override var col: In
 
 class Knight(override var side: Side, override var row: Int, override var col: Int,
              override var promoted: Boolean, override val appInfo: AppInfo, x:Float, y:Float,
-             override val orientation: Orientation) : Figure() {
+             override val orientation: Orientation,override var listener: View.OnClickListener) : Figure() {
 
     companion object {
         val name: FigureName
@@ -528,7 +532,7 @@ class Knight(override var side: Side, override var row: Int, override var col: I
 
     init {
         var pieceView = PieceView(appInfo.context,this)
-
+        pieceView.setOnClickListener(listener)
         if (orientation == Orientation.NORMAL) {
             if (side == Side.WHITE) {
                 commonID = R.drawable.knight_0
@@ -619,7 +623,7 @@ class Knight(override var side: Side, override var row: Int, override var col: I
 
 class Rook(override var side: Side, override var row: Int, override var col: Int,
            override var promoted: Boolean, override val appInfo: AppInfo, x:Float, y:Float,
-           override val orientation: Orientation) : Figure() {
+           override val orientation: Orientation,override var listener: View.OnClickListener) : Figure() {
 
     companion object {
         val name: FigureName
@@ -664,7 +668,7 @@ class Rook(override var side: Side, override var row: Int, override var col: Int
 
    init {
        var pieceView = PieceView(appInfo.context,this)
-
+       pieceView.setOnClickListener(listener)
        if (orientation == Orientation.NORMAL) {
            if (side == Side.WHITE) {
                commonID = R.drawable.rook_0
@@ -733,7 +737,7 @@ class Rook(override var side: Side, override var row: Int, override var col: Int
 
 class Bishop(override var side: Side, override var row: Int, override var col: Int,
              override var promoted: Boolean, override val appInfo: AppInfo, x:Float, y:Float,
-             override val orientation: Orientation) : Figure() {
+             override val orientation: Orientation,override var listener: View.OnClickListener) : Figure() {
 
     companion object {
         val name: FigureName
@@ -777,7 +781,7 @@ class Bishop(override var side: Side, override var row: Int, override var col: I
 
     init {
         var pieceView = PieceView(appInfo.context,this)
-
+        pieceView.setOnClickListener(listener)
         if (orientation == Orientation.NORMAL) {
             if (side == Side.WHITE) {
                 commonID = R.drawable.bishop_0
@@ -838,7 +842,7 @@ class Bishop(override var side: Side, override var row: Int, override var col: I
 
 class King(override var side: Side, override var row: Int, override var col: Int,
            override val appInfo: AppInfo, x:Float, y:Float,
-           override val orientation: Orientation) : Figure() {
+           override val orientation: Orientation,override var listener: View.OnClickListener) : Figure() {
 
 
     override var promoted: Boolean = false
@@ -868,7 +872,7 @@ class King(override var side: Side, override var row: Int, override var col: Int
 
     init {
         var pieceView = PieceView(appInfo.context,this)
-
+        pieceView.setOnClickListener(listener)
         commonID = if (orientation == Orientation.NORMAL) {
             if (side == Side.WHITE) {
                 R.drawable.king_0

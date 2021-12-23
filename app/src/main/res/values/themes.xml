@@ -19,6 +19,12 @@
         <attr name="separateLineSize" format="integer"></attr>
     </declare-styleable>
 
+    <declare-styleable name="ViewMoves">
+        <attr name="cellSize" format="integer"></attr>
+        <attr name="lineSize" format="integer"></attr>
+        <attr name="boardSize" format="integer"></attr>
+    </declare-styleable>
+
     <attr name="relation" format="float"/>
 
 

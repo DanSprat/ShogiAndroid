@@ -3,14 +3,8 @@ package ru.popov.shogi.classes
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
-import android.text.Layout
 import android.util.AttributeSet
-import android.util.DisplayMetrics
-import android.util.Log
 import android.view.View
-import android.widget.ImageView
-import android.widget.RelativeLayout
-import android.widget.TextView
 import ru.popov.shogi.R
 
 class ShogiView(context: Context?, attrs: AttributeSet): View(context,attrs) {
@@ -22,8 +16,6 @@ class ShogiView(context: Context?, attrs: AttributeSet): View(context,attrs) {
     override fun onDraw(canvas: Canvas?) {
         val paint = Paint()
 
-        Log.i("MYTAG","DMW " +resources.displayMetrics.widthPixels.toString())
-        Log.i("MYTAG","DMH " +resources.displayMetrics.heightPixels.toString())
         val noteSize = this.noteSize
         val separateLineSize:Int = this.separateLineSize
         val boardSize = 9 * noteSize + 10*separateLineSize
@@ -35,11 +27,6 @@ class ShogiView(context: Context?, attrs: AttributeSet): View(context,attrs) {
         val paddingFloatX = paddingX.toFloat()
         val paddingFloatY = paddingY.toFloat()
 
-        Log.i("MYTAG", "Width View $width")
-        Log.i("MYTAG", "Height View $height")
-
-        Log.i("MYTAG", "NewTOP: $paddingY")
-        Log.i("MYTAG", "NewLeft: $paddingX")
 
         canvas?.drawBitmap(board,null,Rect(paddingX,paddingY,paddingX + boardSize,paddingY+boardSize),paint)
         paint.color = Color.rgb(0,0,0)
@@ -51,6 +38,7 @@ class ShogiView(context: Context?, attrs: AttributeSet): View(context,attrs) {
             canvas?.drawRect(paddingFloatX,paddingFloatY + i*step,paddingFloatX + boardSize,paddingFloatY +separateLineSize +i* step,paint)
         }
     }
+
 
 
 
