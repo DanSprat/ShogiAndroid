@@ -5,17 +5,17 @@ import android.content.Context
 import android.graphics.*
 import android.util.Log
 import android.view.MotionEvent
+import android.view.MotionEvent.ACTION_DOWN
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RelativeLayout
-import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.*
 import ru.popov.shogi.R
 import ru.popov.shogi.classes.figures.*
 
 class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, var noteSize:Int, var separateLineSize:Int, var layout: RelativeLayout,
-                 private var context: Context,private var layoutParams: ViewGroup.LayoutParams) {
+                 private var context: Context,private var layoutParams: ViewGroup.LayoutParams,var topBoard: Float,var leftBoard: Float) {
     private val figuresOnBoard:MutableSet<Figure> = mutableSetOf()
     private val handWhite:ArrayList<Figure> = ArrayList()
     private val handBlack:ArrayList<Figure> = ArrayList()
@@ -42,7 +42,7 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
         }
     }
 
-    private fun searchRoots(figure: Figure):HashSet<Pair<Int,Int>> {
+    private suspend fun searchRoots(figure: Figure):HashSet<Pair<Int,Int>> {
         val moves:HashSet<Pair<Int,Int>> = HashSet()
         var currentX = figure.col
         var currentY = figure.row
@@ -57,15 +57,35 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
                     boardShogi[currentX + x,currentY + y]?.side == figure.side ) break
                 currentX+=x
                 currentY+=y
-                length++
-            }
-            if(length!=0){
                 moves.add(Pair(currentX,currentY))
+                length++
             }
             currentX= figure.col
             currentY = figure.row
         }
         return moves
+    }
+
+
+    private fun movePieceAt(figure: Figure,row:Int,col:Int,x:Float,y:Float){
+
+        boardShogi[col,row]?.also {
+            it.changeSide()
+            it.row = 0
+            it.col = 0
+            it.pieceImage.visibility = View.INVISIBLE
+            // Move to bundle
+            return
+        }
+
+        boardShogi[figure.col,figure.row] = null
+        boardShogi[col,row] = figure
+        figure.row = row
+        figure.col = col
+        Log.i("Piece",figure.pieceImage.x.toString()+" "+figure.pieceImage.y)
+        figure.pieceImage.x = x
+        figure.pieceImage.y = y
+        figure.pieceImage.colorFilter = ColorMatrixColorFilter(ColorMatrix())
     }
 
     private fun reset(){
@@ -90,11 +110,85 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
         var moves: Deferred<HashSet<Pair<Int,Int>>>? = null
         var checkedView:View? = null
         var firstTouch = true
+        var startFirstCellX = if (orientation == Orientation.NORMAL) {
+            leftBoard + separateLineSize
+        } else {
+            leftBoard + 9 * delta
+        }
+
+        var startFirstCellY = if (orientation == Orientation.NORMAL) {
+            topBoard + 9 * delta
+        } else {
+            topBoard + separateLineSize
+        }
+        val inside = 9 * noteSize + 8 * separateLineSize
+        val finishLastCellX = startFirstCellX + scaleX * inside
+        val finishLastCellY = startFirstCellY + scaleY * inside
+
+        Log.i("Size", "X: $startFirstCellX, Y: $startFirstCellY ")
+        val touchBoard:View.OnTouchListener = View.OnTouchListener { v, event ->
+            when(event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    if(checkedView != null) {
+                        var x:Int = event.x.toInt()
+                        var y:Int = event.y.toInt()
+                        if (orientation == Orientation.NORMAL){
+                            if(x >= startFirstCellX && x <= finishLastCellX && y <= startFirstCellY && y >= finishLastCellY) {
+                                var deltaX:Int = x - startFirstCellX.toInt()
+                                var deltaY:Int = startFirstCellY.toInt() - y
+                                var plusX = deltaX / delta
+                                var plusY = deltaY / delta
+                                var relativeX = x - (startFirstCellX + plusX * delta)
+                                var relativeY = startFirstCellY - plusY * delta - y
+                                if (relativeX <= noteSize && relativeY <= noteSize){
+                                    runBlocking {
+                                        if(moves?.await()?.contains(Pair(plusX + 1, plusY + 1)) == true) {
+                                            var coordinateX = startFirstCellX + plusX * delta  + noteSize / 2  - layoutParams.width / 2
+                                            var coordinateY = startFirstCellY - plusY * delta  - noteSize / 2  - layoutParams.height / 2
+                                            movePieceAt((checkedView as PieceView).figure,plusY + 1,plusX+1,coordinateX,coordinateY)
+                                            checkedView = null
+                                            layout.findViewById<ViewMoves>(R.id.available_moves).also {
+                                                it.clean = true
+                                                it.invalidate()
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            if(x >= startFirstCellX && x <= finishLastCellX && y <= startFirstCellY && y >= finishLastCellY) {
+                                var deltaX:Int = startFirstCellX.toInt() - x
+                                var deltaY:Int = y - startFirstCellY.toInt()
+                                var plusX = deltaX / delta
+                                var plusY = deltaY / delta
+                                var relativeX = startFirstCellX - plusX * delta - x
+                                var relativeY = y - (startFirstCellY - plusY * delta)
+                                if (relativeX <= noteSize && relativeY <= noteSize){
+                                    GlobalScope.launch {
+                                        if(moves?.await()?.contains(Pair(plusX + 1, plusY + 1)) == true) {
+                                            var coordinateX = startFirstCellX - plusX * delta  - noteSize / 2  - layoutParams.width / 2
+                                            var coordinateY = startFirstCellY + plusY * delta  + noteSize / 2  - layoutParams.height / 2
+                                            movePieceAt((checkedView as PieceView).figure,plusY + 1,plusX+1,coordinateX,coordinateY)
+                                            checkedView = null
+                                            layout.findViewById<ViewMoves>(R.id.available_moves).also {
+                                                it.clean = true
+                                                it.invalidate()
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            true
+        }
+        layout.findViewById<ShogiView>(R.id.shogi_view).setOnTouchListener(touchBoard)
+
         val touchListener:View.OnClickListener = View.OnClickListener { v->
             v.bringToFront()
-
-
-            if (checkedView == null || checkedView != v) {
+            if (checkedView == null || checkedView != v && (checkedView as PieceView).figure.side == (v as PieceView).figure.side ) {
                 if(checkedView != null && checkedView != v) {
                     layout.findViewById<ViewMoves>(R.id.available_moves).also {
                         it.clean = true
@@ -102,6 +196,7 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
                     }
                     (checkedView as ImageView).colorFilter = ColorMatrixColorFilter(ColorMatrix())
                 }
+
                 checkedView = v
                 firstTouch = false
                 val matrixArr: FloatArray = floatArrayOf(0f,0f,0f,0f,0f,
@@ -111,27 +206,32 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
                     0f,0f,0f,0f,0f)
 
                 (v as ImageView).colorFilter = ColorMatrixColorFilter(ColorMatrix(matrixArr))
-                runBlocking {
+                GlobalScope.launch {
+                    Log.i("COR","Start coroutine")
                     moves = async { searchRoots((v as PieceView).figure) }
-                    launch {
-                        val waitMoves = moves?.await()
-                        if (waitMoves != null) {
-                            layout.findViewById<ViewMoves>(R.id.available_moves).also {
-                                it.movesSet = waitMoves
-                                it.scaleX = scaleX
-                                it.scaleY = scaleY
-                                it.clean = false
-                                it.invalidate()
-                            }
+                    val waitMoves = moves?.await()
+                    if (waitMoves != null) {
+                        layout.findViewById<ViewMoves>(R.id.available_moves).also {
+                            it.movesSet = waitMoves
+                            it.scaleX = scaleX
+                            it.scaleY = scaleY
+                            it.clean = false
+                            it.invalidate()
                         }
                     }
                 }
+                Log.i("COR","OutSide Run")
             } else {
                 layout.findViewById<ViewMoves>(R.id.available_moves).also {
                     it.clean = true
                     it.invalidate()
-                    (v as ImageView).colorFilter = ColorMatrixColorFilter(ColorMatrix())
+                    if (v == checkedView){
+                        (v as ImageView).colorFilter = ColorMatrixColorFilter(ColorMatrix())
+                    } else {
+                        (checkedView as ImageView).colorFilter = ColorMatrixColorFilter(ColorMatrix())
+                    }
                     checkedView = null
+
                 }
             }
 

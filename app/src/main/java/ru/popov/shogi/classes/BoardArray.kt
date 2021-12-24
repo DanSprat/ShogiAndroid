@@ -7,7 +7,7 @@ class BoardArray {
     public operator fun get(i:Int,j:Int): Figure? {
         return board[9-j][i-1]
     }
-    public operator fun set(i:Int,j:Int,figure: Figure){
+    public operator fun set(i:Int,j:Int,figure: Figure?){
         board[9-j][i-1] = figure
     }
 }
