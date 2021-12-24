@@ -59,9 +59,14 @@ class ShogiFragment : Fragment() {
 
         val rel:Float = test1.intrinsicHeight.toFloat() / (noteSize * scaleNote)
         val layoutParams: ViewGroup.LayoutParams = ViewGroup.LayoutParams((test1.intrinsicWidth / rel).toInt(),(test1.intrinsicHeight / rel).toInt())
+        val top = (dm.heightPixels - boardSize) / 2
+        val left = (dm.widthPixels - boardSize) / 2
+
+        Log.i("Size", "Top: $top, Left: $left ")
         val topX = (displayWidth - boardSize) / 2 + separateLineSize + noteSize / 2 - layoutParams.width / 2
         val topY = (dm.heightPixels - boardSize) / 2 + separateLineSize + noteSize / 2 - layoutParams.height / 2
 
+        Log.i("Size", "Width: ${dm.widthPixels}, Height: ${dm.heightPixels} ")
         binding.noteSize = noteSize
         binding.separateLineSize = separateLineSize
         binding.boardSize = boardSize
@@ -69,7 +74,7 @@ class ShogiFragment : Fragment() {
 
         val game = activity?.let {
             ShogiModel(Orientation.NORMAL,topY.toFloat(),topX.toFloat(),noteSize, separateLineSize, layout,
-                it,layoutParams
+                it,layoutParams,top.toFloat(),left.toFloat()
             )
         }
         return binding.root

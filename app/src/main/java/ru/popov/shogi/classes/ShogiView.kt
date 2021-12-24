@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import ru.popov.shogi.R
 
@@ -28,6 +29,8 @@ class ShogiView(context: Context?, attrs: AttributeSet): View(context,attrs) {
         val paddingFloatY = paddingY.toFloat()
 
 
+        Log.i("Size", "Top: $paddingY, Left: $paddingX ")
+        Log.i("Size", "Width: ${resources.displayMetrics.widthPixels}, Height: ${resources.displayMetrics.heightPixels} ")
         canvas?.drawBitmap(board,null,Rect(paddingX,paddingY,paddingX + boardSize,paddingY+boardSize),paint)
         paint.color = Color.rgb(0,0,0)
         paint.style = Paint.Style.FILL

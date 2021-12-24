@@ -8,3 +8,7 @@ Done drawing board and all pieces scaled by screen size.
 ### 23.12.2021
 Selection of pieces works
 ![Shogi View](Screenshots/selectedPiece.jpg)
+
+### 24.12.2021
+Added moving of pieces by rules
+![Moving Pieces](Screenshots/Move.gif)

@@ -460,9 +460,9 @@ class Lance(override var side: Side, override var row: Int, override var col: In
             this.name = Pawn.name
             abbrName = Pawn.abbrName
             rules = if (side == Side.WHITE){
-                ShogiRules.PAWN_WHITE
+                ShogiRules.LANCE_WHITE
             } else {
-                ShogiRules.PAWN_BLACK
+                ShogiRules.LANCE_BLACK
             }
         }
         pieceImage = pieceView
