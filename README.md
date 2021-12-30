@@ -12,3 +12,7 @@ Selection of pieces works
 ### 24.12.2021
 Added moving of pieces by rules
 ![Moving Pieces](Screenshots/Move.gif)
+
+### 30.12.2021
+Added eating of pieces
+![Eating](Screenshots/Eating.gif)

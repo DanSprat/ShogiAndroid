@@ -52,9 +52,14 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
             var x = vectorMove.vector.first
             var y = vectorMove.vector.second
             var length = 0
+            var isEat = false
             for(j in 0 until vectorMove.length){
                 if (currentX + x <1 || currentX + x > 9 || currentY + y < 1 || currentY + y >9 ||
-                    boardShogi[currentX + x,currentY + y]?.side == figure.side ) break
+                    boardShogi[currentX + x,currentY + y]?.side == figure.side || isEat) break
+
+                boardShogi[currentX + x, currentY + y]?.let {
+                    isEat = it.side != figure.side
+                }
                 currentX+=x
                 currentY+=y
                 moves.add(Pair(currentX,currentY))
@@ -68,14 +73,12 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
 
 
     private fun movePieceAt(figure: Figure,row:Int,col:Int,x:Float,y:Float){
-
         boardShogi[col,row]?.also {
             it.changeSide()
             it.row = 0
             it.col = 0
             it.pieceImage.visibility = View.INVISIBLE
             // Move to bundle
-            return
         }
 
         boardShogi[figure.col,figure.row] = null
@@ -125,6 +128,9 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
         val finishLastCellX = startFirstCellX + scaleX * inside
         val finishLastCellY = startFirstCellY + scaleY * inside
 
+        layout.findViewById<ViewMoves>(R.id.available_moves).also {
+            it.boardArray = boardShogi
+        }
         Log.i("Size", "X: $startFirstCellX, Y: $startFirstCellY ")
         val touchBoard:View.OnTouchListener = View.OnTouchListener { v, event ->
             when(event.action) {
@@ -190,11 +196,12 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
             v.bringToFront()
             if (checkedView == null || checkedView != v && (checkedView as PieceView).figure.side == (v as PieceView).figure.side ) {
                 if(checkedView != null && checkedView != v) {
-                    layout.findViewById<ViewMoves>(R.id.available_moves).also {
-                        it.clean = true
-                        it.invalidate()
-                    }
-                    (checkedView as ImageView).colorFilter = ColorMatrixColorFilter(ColorMatrix())
+                        layout.findViewById<ViewMoves>(R.id.available_moves).also {
+                            it.clean = true
+                            it.invalidate()
+                        }
+                        (checkedView as ImageView).colorFilter = ColorMatrixColorFilter(ColorMatrix())
+
                 }
 
                 checkedView = v
@@ -222,17 +229,50 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
                 }
                 Log.i("COR","OutSide Run")
             } else {
-                layout.findViewById<ViewMoves>(R.id.available_moves).also {
-                    it.clean = true
-                    it.invalidate()
-                    if (v == checkedView){
-                        (v as ImageView).colorFilter = ColorMatrixColorFilter(ColorMatrix())
-                    } else {
-                        (checkedView as ImageView).colorFilter = ColorMatrixColorFilter(ColorMatrix())
-                    }
-                    checkedView = null
 
+                if (checkedView != null && checkedView != v) {
+                    if ((checkedView as PieceView).figure.side != (v as PieceView).figure.side){
+                        var selected = checkedView as PieceView
+                        var enemy = v
+                        runBlocking {
+                            var w8Moves = moves?.await()
+                            if(w8Moves?.contains(Pair(enemy.figure.col,enemy.figure.row)) == true) {
+                                movePieceAt(selected.figure,enemy.figure.row,enemy.figure.col,enemy.x,enemy.y)
+                                layout.findViewById<ViewMoves>(R.id.available_moves).also {
+                                    it.clean = true
+                                    it.invalidate()
+                                }
+                                (checkedView as ImageView).colorFilter = ColorMatrixColorFilter(ColorMatrix())
+                            } else {
+                                layout.findViewById<ViewMoves>(R.id.available_moves).also {
+                                    it.clean = true
+                                    it.invalidate()
+                                    if (v == checkedView){
+                                        (v as ImageView).colorFilter = ColorMatrixColorFilter(ColorMatrix())
+                                    } else {
+                                        (checkedView as ImageView).colorFilter = ColorMatrixColorFilter(ColorMatrix())
+                                    }
+                                    checkedView = null
+
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    layout.findViewById<ViewMoves>(R.id.available_moves).also {
+                        it.clean = true
+                        it.invalidate()
+                        if (v == checkedView){
+                            (v as ImageView).colorFilter = ColorMatrixColorFilter(ColorMatrix())
+                        } else {
+                            (checkedView as ImageView).colorFilter = ColorMatrixColorFilter(ColorMatrix())
+                        }
+                        checkedView = null
+
+                    }
                 }
+
+
             }
 
         }

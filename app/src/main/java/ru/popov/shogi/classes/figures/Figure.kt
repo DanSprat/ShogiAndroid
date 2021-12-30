@@ -568,9 +568,9 @@ class Knight(override var side: Side, override var row: Int, override var col: I
             this.name = Knight.name
             abbrName = Knight.abbrName
             rules = if (side == Side.WHITE){
-                ShogiRules.PAWN_WHITE
+                ShogiRules.KNIGHT_WHITE
             } else {
-                ShogiRules.PAWN_BLACK
+                ShogiRules.KNIGHT_BLACK
             }
         }
         pieceImage = pieceView

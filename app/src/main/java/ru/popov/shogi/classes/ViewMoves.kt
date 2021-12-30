@@ -1,11 +1,10 @@
 package ru.popov.shogi.classes
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
+import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
+import ru.popov.shogi.R
 import ru.popov.shogi.classes.figures.Orientation
 
 class ViewMoves(context:Context ,attrs: AttributeSet):View(context,attrs) {
@@ -25,7 +24,8 @@ class ViewMoves(context:Context ,attrs: AttributeSet):View(context,attrs) {
     var firstCellX = 0f
     var firstCellY = 0f
     var movesSet = HashSet<Pair<Int,Int>> ()
-
+    var bitMap = BitmapFactory.decodeResource(resources, R.drawable.eat)
+    var boardArray = BoardArray()
     override fun onDraw(canvas: Canvas?) {
         if(!clean) {
             var paddingX = 0f
@@ -44,7 +44,17 @@ class ViewMoves(context:Context ,attrs: AttributeSet):View(context,attrs) {
             paint.strokeWidth = 3f
            for (x in movesSet){
                for (i in movesSet){
-                   canvas?.drawCircle(firstCellX + scaleX * delta * (x.first - 1), firstCellY + scaleY * delta * (x.second - 1),20f,paint)
+                   if (boardArray[x.first,x.second] !=null){
+                       var topRect = firstCellY + scaleY * delta * (x.second - 1) - cellSize / 2
+                       var leftRect = firstCellX + scaleX * delta * (x.first - 1) - cellSize / 2
+                       var bottomRect = topRect + cellSize
+                       var rightRect = leftRect + cellSize
+                       canvas?.drawBitmap(bitMap,null,Rect(leftRect.toInt(),topRect.toInt(),rightRect.toInt(),bottomRect.toInt()),Paint())
+                   } else {
+                       canvas?.drawCircle(firstCellX + scaleX * delta * (x.first - 1), firstCellY + scaleY * delta * (x.second - 1),20f,paint)
+                   }
+
+
                }
            }
 
