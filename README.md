@@ -16,3 +16,6 @@ Added moving of pieces by rules <br>
 ### 30.12.2021
 Added eating of pieces <br>
 ![Eating](Screenshots/Eating.gif)
+
+### 31.12.2021
+Happy New Year!
