@@ -25,6 +25,11 @@
         <attr name="boardSize" format="integer"></attr>
     </declare-styleable>
 
+    <declare-styleable name="BundleView">
+        <attr name="boardSZ" format="integer"></attr>
+        <attr name="isLower" format="integer"></attr>
+    </declare-styleable>
+
     <attr name="relation" format="float"/>
 
 

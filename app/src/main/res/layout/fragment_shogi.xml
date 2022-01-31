@@ -7,7 +7,6 @@
         <variable name="noteSize" type="Integer" />
         <variable name="separateLineSize" type="Integer" />
         <variable name="boardSize" type="Integer" />
-
     </data>
 
     <RelativeLayout
@@ -16,21 +15,42 @@
         android:id="@+id/layout_SHG"
         tools:context=".classes.ShogiFragment">
 
+
         <ru.popov.shogi.classes.ShogiView
             android:id="@+id/shogi_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             app:separateLineSize="@{separateLineSize}"
             app:noteSize="@{noteSize}"/>
+
 
         <ru.popov.shogi.classes.ViewMoves
             android:id="@+id/available_moves"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:cellSize="@{noteSize}"
             app:boardSize="@{boardSize}"
-            app:lineSize="@{separateLineSize}"
-           />
+            app:cellSize="@{noteSize}"
+            app:lineSize="@{separateLineSize}" />
+
+
+
+        <ru.popov.shogi.classes.BundleView
+            app:boardSZ="@{boardSize}"
+            app:isLower="1"
+            android:id="@+id/lower_bundle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+        </ru.popov.shogi.classes.BundleView>
+
+        <ru.popov.shogi.classes.BundleView
+            android:id="@+id/upper_bundle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:boardSZ="@{boardSize}"
+            app:isLower="-1">
+
+        </ru.popov.shogi.classes.BundleView>
+
 
     </RelativeLayout>
 </layout>

@@ -18,6 +18,9 @@ import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import ru.popov.shogi.MainActivity
 import ru.popov.shogi.R
 import ru.popov.shogi.classes.figures.Orientation
@@ -38,11 +41,13 @@ class ShogiFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+
+        val binding: FragmentShogiBinding = FragmentShogiBinding.inflate(inflater,container,false)
+        val layout:RelativeLayout = binding.root.findViewById(R.id.layout_SHG)
         val scaleNote:Float = 0.9f
         val relation:Float = 0.1f
-        val binding: FragmentShogiBinding = FragmentShogiBinding.inflate(inflater,container,false)
 
-        val layout:RelativeLayout = binding.root.findViewById(R.id.layout_SHG)
 
         val dm = resources.displayMetrics
         val displayWidth = dm.widthPixels

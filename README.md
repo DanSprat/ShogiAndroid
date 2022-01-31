@@ -14,5 +14,9 @@ Added moving of pieces by rules
 ![Moving Pieces](Screenshots/Move.gif)
 
 ### 30.12.2021
-Added eating of pieces
+Added eating of pieces 
 ![Eating](Screenshots/Eating.gif)
+
+### 31.01.2022
+Added bundle for eaten pieces
+![Bundle](Screenshots/bundle.jpg)
