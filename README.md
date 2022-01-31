@@ -10,12 +10,15 @@ Selection of pieces works
 ![Shogi View](Screenshots/selectedPiece.jpg)
 
 ### 24.12.2021
-Added moving of pieces by rules
+Added moving of pieces by rules <br>
 ![Moving Pieces](Screenshots/Move.gif)
 
 ### 30.12.2021
-Added eating of pieces 
+Added eating of pieces <br>
 ![Eating](Screenshots/Eating.gif)
+
+### 31.12.2021
+Happy New Year!
 
 ### 31.01.2022
 Added bundle for eaten pieces
