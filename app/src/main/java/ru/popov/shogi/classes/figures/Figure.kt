@@ -29,6 +29,7 @@ abstract class Figure {
     protected abstract var promoted: Boolean
     protected abstract val appInfo:AppInfo
     protected abstract val orientation:Orientation
+    protected var eaten:Boolean = false
 
     protected abstract fun changeImages()
     protected abstract fun reset()
@@ -36,6 +37,7 @@ abstract class Figure {
 
     fun changeSide() {
         reset()
+        changeImages()
         rules = rules.next()
         side = side.next()
     }
@@ -44,7 +46,7 @@ abstract class Figure {
 
 class Pawn(override var side: Side, override var row: Int, override var col: Int,
            override var promoted: Boolean, override val appInfo: AppInfo, x:Float, y:Float,
-           override val orientation: Orientation, override var listener: View.OnClickListener) : Figure() {
+           override val orientation: Orientation, override var listener: View.OnClickListener,eaten:Boolean) : Figure() {
 
     override lateinit var pieceImage: PieceView
     override lateinit var abbrName: String
@@ -54,6 +56,7 @@ class Pawn(override var side: Side, override var row: Int, override var col: Int
     private var promotedID:Int = 0
 
     init {
+        this.eaten = eaten
         var pieceView = PieceView(appInfo.context,this)
         pieceView.setOnClickListener(listener)
         if (orientation == Orientation.NORMAL) {
@@ -170,7 +173,7 @@ class Pawn(override var side: Side, override var row: Int, override var col: Int
 
 class Silver(override var side: Side, override var row: Int, override var col: Int,
              override var promoted: Boolean, override val appInfo: AppInfo, x:Float, y:Float,
-             override val orientation: Orientation,override var listener: View.OnClickListener) : Figure() {
+             override val orientation: Orientation,override var listener: View.OnClickListener,eaten: Boolean) : Figure() {
 
     companion object {
         val name: FigureName
@@ -226,6 +229,7 @@ class Silver(override var side: Side, override var row: Int, override var col: I
     }
 
     init {
+        this.eaten = eaten
         var pieceView = PieceView(appInfo.context,this)
         pieceView.setOnClickListener(listener)
         if (orientation == Orientation.NORMAL) {
@@ -300,7 +304,7 @@ class Silver(override var side: Side, override var row: Int, override var col: I
 
 class Gold(override var side: Side, override var row: Int, override var col: Int,
            override val appInfo: AppInfo, x:Float, y:Float,
-           override val orientation: Orientation,override var listener: View.OnClickListener) : Figure() {
+           override val orientation: Orientation,override var listener: View.OnClickListener,eaten: Boolean) : Figure() {
 
 
 
@@ -319,12 +323,13 @@ class Gold(override var side: Side, override var row: Int, override var col: Int
             }
         } else {
             if (side == Side.WHITE) {
-                R.drawable.gold_1
-            } else {
                 R.drawable.gold_0
+            } else {
+                R.drawable.gold_1
 
             }
         }
+        pieceImage.setImageResource(commonID)
     }
 
     override var rules: ShogiRules = if (side == Side.WHITE) {
@@ -334,6 +339,7 @@ class Gold(override var side: Side, override var row: Int, override var col: Int
     }
 
     init {
+        this.eaten = eaten
         var pieceView = PieceView(appInfo.context,this)
         pieceView.setOnClickListener(listener)
         commonID = if (orientation == Orientation.NORMAL) {
@@ -386,7 +392,7 @@ class Gold(override var side: Side, override var row: Int, override var col: Int
 
 class Lance(override var side: Side, override var row: Int, override var col: Int,
             override var promoted: Boolean, override val appInfo: AppInfo, x:Float, y:Float,
-            override val orientation: Orientation,override var listener: View.OnClickListener) : Figure() {
+            override val orientation: Orientation,override var listener: View.OnClickListener,eaten: Boolean) : Figure() {
 
     private var commonID:Int = 0
     private var promotedID:Int = 0
@@ -413,6 +419,7 @@ class Lance(override var side: Side, override var row: Int, override var col: In
                 promotedID = R.drawable.p_lance_0
             }
         }
+        pieceImage.setImageResource(commonID)
     }
 
     override var rules: ShogiRules = if (side == Side.WHITE) {
@@ -423,6 +430,7 @@ class Lance(override var side: Side, override var row: Int, override var col: In
 
 
     init {
+        this.eaten = eaten
         var pieceView = PieceView(appInfo.context,this)
         pieceView.setOnClickListener(listener)
         if (orientation == Orientation.NORMAL) {
@@ -508,7 +516,7 @@ class Lance(override var side: Side, override var row: Int, override var col: In
 
 class Knight(override var side: Side, override var row: Int, override var col: Int,
              override var promoted: Boolean, override val appInfo: AppInfo, x:Float, y:Float,
-             override val orientation: Orientation,override var listener: View.OnClickListener) : Figure() {
+             override val orientation: Orientation,override var listener: View.OnClickListener,eaten: Boolean) : Figure() {
 
     companion object {
         val name: FigureName
@@ -531,6 +539,7 @@ class Knight(override var side: Side, override var row: Int, override var col: I
     override lateinit var rules: ShogiRules
 
     init {
+        this.eaten = eaten
         var pieceView = PieceView(appInfo.context,this)
         pieceView.setOnClickListener(listener)
         if (orientation == Orientation.NORMAL) {
@@ -594,6 +603,7 @@ class Knight(override var side: Side, override var row: Int, override var col: I
                 promotedID = R.drawable.p_knight_0
             }
         }
+        pieceImage.setImageResource(commonID)
     }
 
 
@@ -623,7 +633,7 @@ class Knight(override var side: Side, override var row: Int, override var col: I
 
 class Rook(override var side: Side, override var row: Int, override var col: Int,
            override var promoted: Boolean, override val appInfo: AppInfo, x:Float, y:Float,
-           override val orientation: Orientation,override var listener: View.OnClickListener) : Figure() {
+           override val orientation: Orientation,override var listener: View.OnClickListener,eaten: Boolean) : Figure() {
 
     companion object {
         val name: FigureName
@@ -662,11 +672,13 @@ class Rook(override var side: Side, override var row: Int, override var col: Int
                 promotedID = R.drawable.p_rook_0
             }
         }
+        pieceImage.setImageResource(commonID)
     }
 
     override lateinit var rules: ShogiRules
 
    init {
+       this.eaten = eaten
        var pieceView = PieceView(appInfo.context,this)
        pieceView.setOnClickListener(listener)
        if (orientation == Orientation.NORMAL) {
@@ -737,7 +749,7 @@ class Rook(override var side: Side, override var row: Int, override var col: Int
 
 class Bishop(override var side: Side, override var row: Int, override var col: Int,
              override var promoted: Boolean, override val appInfo: AppInfo, x:Float, y:Float,
-             override val orientation: Orientation,override var listener: View.OnClickListener) : Figure() {
+             override val orientation: Orientation,override var listener: View.OnClickListener,eaten: Boolean) : Figure() {
 
     companion object {
         val name: FigureName
@@ -775,11 +787,13 @@ class Bishop(override var side: Side, override var row: Int, override var col: I
                 promotedID = R.drawable.p_bishop_1
             }
         }
+        pieceImage.setImageResource(commonID)
     }
 
     override lateinit var rules: ShogiRules
 
     init {
+        this.eaten = eaten
         var pieceView = PieceView(appInfo.context,this)
         pieceView.setOnClickListener(listener)
         if (orientation == Orientation.NORMAL) {
@@ -842,7 +856,7 @@ class Bishop(override var side: Side, override var row: Int, override var col: I
 
 class King(override var side: Side, override var row: Int, override var col: Int,
            override val appInfo: AppInfo, x:Float, y:Float,
-           override val orientation: Orientation,override var listener: View.OnClickListener) : Figure() {
+           override val orientation: Orientation,override var listener: View.OnClickListener,eaten: Boolean) : Figure() {
 
 
     override var promoted: Boolean = false
@@ -871,6 +885,7 @@ class King(override var side: Side, override var row: Int, override var col: Int
     override var rules: ShogiRules = ShogiRules.KING
 
     init {
+        this.eaten = eaten
         var pieceView = PieceView(appInfo.context,this)
         pieceView.setOnClickListener(listener)
         commonID = if (orientation == Orientation.NORMAL) {

@@ -23,3 +23,6 @@ Happy New Year!
 ### 31.01.2022
 Added bundle for eaten pieces
 ![Bundle](Screenshots/bundle.jpg)
+
+Added collection of eaten figures to the bundle
+![CollectionToBundle](Screenshots/push_to_bundle.gif)
