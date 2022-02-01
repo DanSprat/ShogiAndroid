@@ -29,7 +29,6 @@ class BundleView(context: Context?, attrs: AttributeSet): View(context,attrs) {
             hashMap["Rook"] = 6
         }
     }
-
     var isLower:Int = 0
     var boardSZ:Int = 0
     var layoutParam:ViewGroup.LayoutParams
