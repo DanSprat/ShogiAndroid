@@ -52,5 +52,24 @@
         </ru.popov.shogi.classes.BundleView>
 
 
+        <ru.popov.shogi.classes.CountsView
+            app:board="@{boardSize}"
+            app:inLow="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/bottom_counts"
+           >
+        </ru.popov.shogi.classes.CountsView>
+
+        <ru.popov.shogi.classes.CountsView
+            app:inLow="-1"
+            app:board="@{boardSize}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/upper_counts">
+        </ru.popov.shogi.classes.CountsView>
+
+
+
     </RelativeLayout>
 </layout>

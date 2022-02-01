@@ -21,14 +21,20 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
     private val handBlack:ArrayList<Figure> = ArrayList()
     private val whiteBundle:BundleView
     private val blackBundle:BundleView
+    private val whiteCounts:CountsView
+    private val blackCounts:CountsView
 
     private var boardShogi:BoardArray = BoardArray()
 
     init {
         if (orientation == Orientation.NORMAL) {
+            whiteCounts = layout.findViewById(R.id.bottom_counts)
+            blackCounts = layout.findViewById(R.id.upper_counts)
             whiteBundle = layout.findViewById(R.id.lower_bundle)
             blackBundle = layout.findViewById(R.id.upper_bundle)
         } else {
+            blackCounts = layout.findViewById(R.id.bottom_counts)
+            whiteCounts = layout.findViewById(R.id.upper_counts)
             blackBundle = layout.findViewById(R.id.lower_bundle)
             whiteBundle = layout.findViewById(R.id.upper_bundle)
         }
@@ -90,7 +96,9 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
             // Move to bundle
             if (it.side == Side.WHITE) {
                 whiteBundle.moveToBundle(it)
+                whiteCounts.increment(it)
             } else {
+                blackCounts.increment(it)
                 blackBundle.moveToBundle(it)
             }
         }

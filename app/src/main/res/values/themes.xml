@@ -30,6 +30,14 @@
         <attr name="isLower" format="integer"></attr>
     </declare-styleable>
 
+    <declare-styleable name="CountsView">
+        <attr name="board" format="integer"></attr>
+        <attr name="inLow" format="integer"></attr>
+    </declare-styleable>
+    <declare-styleable name="TestVies">
+        <attr name="test" format="integer"></attr>
+    </declare-styleable>
+
     <attr name="relation" format="float"/>
 
 
