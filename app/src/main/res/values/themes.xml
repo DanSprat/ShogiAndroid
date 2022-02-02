@@ -38,6 +38,12 @@
         <attr name="test" format="integer"></attr>
     </declare-styleable>
 
+    <declare-styleable name="WhiteCanvasView">
+        <attr name="boardWidth" format="integer"></attr>
+        <attr name="line" format="integer"></attr>
+        <attr name="cell" format="integer"></attr>
+    </declare-styleable>
+
     <attr name="relation" format="float"/>
 
 

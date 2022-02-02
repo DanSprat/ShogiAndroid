@@ -23,6 +23,16 @@
             app:separateLineSize="@{separateLineSize}"
             app:noteSize="@{noteSize}"/>
 
+        <ru.popov.shogi.classes.WhiteCanvasView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/white_canvas"
+            app:boardWidth="@{boardSize}"
+            app:cell="@{noteSize}"
+            app:line="@{separateLineSize}">
+
+        </ru.popov.shogi.classes.WhiteCanvasView>
+
 
         <ru.popov.shogi.classes.ViewMoves
             android:id="@+id/available_moves"

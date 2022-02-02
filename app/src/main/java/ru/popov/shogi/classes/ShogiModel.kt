@@ -26,6 +26,18 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
 
     private var boardShogi:BoardArray = BoardArray()
 
+    companion object {
+        private var promID:HashMap<String,PromotableIDs> = HashMap()
+        init {
+            promID["Pawn"] = PromotableIDs.PAWN
+            promID["Lance"] = PromotableIDs.LANCE
+            promID["Knight"] = PromotableIDs.KNIGHT
+            promID["Silver"] = PromotableIDs.SILVER
+            promID["Bishop"] = PromotableIDs.BISHOP
+            promID["Rook"] = PromotableIDs.ROOK
+        }
+    }
+
     init {
         if (orientation == Orientation.NORMAL) {
             whiteCounts = layout.findViewById(R.id.bottom_counts)
@@ -92,7 +104,7 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
             it.changeSide()
             it.row = 0
             it.col = 0
-            //it.pieceImage.visibility = View.INVISIBLE
+
             // Move to bundle
             if (it.side == Side.WHITE) {
                 whiteBundle.moveToBundle(it)
@@ -101,6 +113,7 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
                 blackCounts.increment(it)
                 blackBundle.moveToBundle(it)
             }
+            it.eaten = true
         }
 
         boardShogi[figure.col,figure.row] = null
@@ -132,9 +145,44 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
             firstCellX = left + 8 * delta
             firstCellY = top
         }
+        var startPromoting = false
         var moves: Deferred<HashSet<Pair<Int,Int>>>? = null
         var checkedView:View? = null
-        var firstTouch = true
+        var moveInfo:MoveInfo? = null
+        var chooseToPromoteOld:ImageView = ImageView(context)
+        var chooseToPromoteNew:ImageView = ImageView(context)
+        chooseToPromoteOld.setOnClickListener {
+            checkedView = null
+            startPromoting = false
+            moveInfo?.let {
+                movePieceAt(it.figure,it.row,it.col,it.x,it.y)
+            }
+            appInfo.layout.removeView(chooseToPromoteNew)
+            appInfo.layout.removeView(chooseToPromoteOld)
+            layout.findViewById<WhiteCanvasView>(R.id.white_canvas).also {
+                it.clean = true
+                it.invalidate()
+            }
+        }
+
+        chooseToPromoteNew.setOnClickListener {
+            checkedView = null
+            startPromoting = false
+            moveInfo?.let {
+                it.figure.promote()
+                movePieceAt(it.figure,it.row,it.col,it.x,it.y)
+            }
+            appInfo.layout.removeView(chooseToPromoteNew)
+            appInfo.layout.removeView(chooseToPromoteOld)
+            layout.findViewById<WhiteCanvasView>(R.id.white_canvas).also {
+                it.clean = true
+                it.invalidate()
+            }
+        }
+
+
+
+        var firstTouch = false
         var startFirstCellX = if (orientation == Orientation.NORMAL) {
             leftBoard + separateLineSize
         } else {
@@ -153,11 +201,14 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
         layout.findViewById<ViewMoves>(R.id.available_moves).also {
             it.boardArray = boardShogi
         }
-        Log.i("Size", "X: $startFirstCellX, Y: $startFirstCellY ")
+
+        var oldX:Float = 0f
+        var oldY:Float = 0f
+
         val touchBoard:View.OnTouchListener = View.OnTouchListener { v, event ->
             when(event.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    if(checkedView != null) {
+                ACTION_DOWN -> {
+                    if(checkedView != null && !startPromoting) {
                         var x:Int = event.x.toInt()
                         var y:Int = event.y.toInt()
                         if (orientation == Orientation.NORMAL){
@@ -173,11 +224,67 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
                                         if(moves?.await()?.contains(Pair(plusX + 1, plusY + 1)) == true) {
                                             var coordinateX = startFirstCellX + plusX * delta  + noteSize / 2  - layoutParams.width / 2
                                             var coordinateY = startFirstCellY - plusY * delta  - noteSize / 2  - layoutParams.height / 2
-                                            movePieceAt((checkedView as PieceView).figure,plusY + 1,plusX+1,coordinateX,coordinateY)
-                                            checkedView = null
-                                            layout.findViewById<ViewMoves>(R.id.available_moves).also {
-                                                it.clean = true
-                                                it.invalidate()
+                                            var figure =(checkedView as PieceView).figure
+                                            var promoting = figure.ableToPromote(plusY + 1)
+                                            when(promoting){
+                                                Promoting.NECESSARY -> {
+                                                    figure.promote()
+                                                    movePieceAt((checkedView as PieceView).figure,plusY + 1,plusX+1,coordinateX,coordinateY)
+                                                    checkedView = null
+                                                    layout.findViewById<ViewMoves>(R.id.available_moves).also {
+                                                        it.clean = true
+                                                        it.invalidate()
+                                                    }
+                                                }
+                                                Promoting.ABLE -> {
+                                                    oldX = figure.pieceImage.x
+                                                    oldY = figure.pieceImage.y
+                                                    chooseToPromoteNew.x = coordinateX
+                                                    chooseToPromoteNew.y = coordinateY
+                                                    promID[figure::class.simpleName]?.let {
+                                                        if (figure.side == Side.BLACK) {
+                                                            chooseToPromoteNew.setImageResource(it.promotedDown)
+                                                            chooseToPromoteOld.setImageResource(it.commonDown)
+                                                            chooseToPromoteOld.x = coordinateX
+                                                            chooseToPromoteOld.y = coordinateY - noteSize - separateLineSize
+                                                        } else {
+                                                            chooseToPromoteNew.setImageResource(it.promotedUP)
+                                                            chooseToPromoteOld.setImageResource(it.commonUP)
+                                                            chooseToPromoteOld.x = coordinateX
+                                                            chooseToPromoteOld.y = coordinateY + noteSize + separateLineSize
+                                                        }
+                                                    }
+                                                    layout.findViewById<WhiteCanvasView>(R.id.white_canvas).also {
+                                                        it.bringToFront()
+                                                        it.clean = false
+                                                        it.newPoint = Pair(chooseToPromoteNew.x,chooseToPromoteNew.y)
+                                                        it.otherPoint = Pair(chooseToPromoteOld.x,chooseToPromoteOld.y)
+                                                        it.layoutParam = figure.pieceImage.layoutParams
+                                                        it.invalidate()
+                                                    }
+                                                    startPromoting = true
+                                                    chooseToPromoteNew.layoutParams = figure.pieceImage.layoutParams
+                                                    appInfo.layout.addView(chooseToPromoteNew)
+                                                    chooseToPromoteOld.layoutParams = figure.pieceImage.layoutParams
+                                                    appInfo.layout.addView(chooseToPromoteOld)
+                                                    layout.findViewById<ViewMoves>(R.id.available_moves).also {
+                                                        it.clean = true
+                                                        it.invalidate()
+                                                    }
+
+                                                    figure.pieceImage.x = coordinateX
+                                                    figure.pieceImage.y = coordinateY
+                                                    moveInfo = MoveInfo(figure,plusX+1,plusY+1,coordinateX,coordinateY)
+                                                    // Drawing 2 figures and canvas
+                                                }
+                                                Promoting.NONE -> {
+                                                    movePieceAt((checkedView as PieceView).figure,plusY + 1,plusX+1,coordinateX,coordinateY)
+                                                    checkedView = null
+                                                    layout.findViewById<ViewMoves>(R.id.available_moves).also {
+                                                        it.clean = true
+                                                        it.invalidate()
+                                                    }
+                                                }
                                             }
                                         }
                                     }
@@ -196,11 +303,67 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
                                         if(moves?.await()?.contains(Pair(plusX + 1, plusY + 1)) == true) {
                                             var coordinateX = startFirstCellX - plusX * delta  - noteSize / 2  - layoutParams.width / 2
                                             var coordinateY = startFirstCellY + plusY * delta  + noteSize / 2  - layoutParams.height / 2
-                                            movePieceAt((checkedView as PieceView).figure,plusY + 1,plusX+1,coordinateX,coordinateY)
-                                            checkedView = null
-                                            layout.findViewById<ViewMoves>(R.id.available_moves).also {
-                                                it.clean = true
-                                                it.invalidate()
+                                            var figure =(checkedView as PieceView).figure
+                                            var promoting = figure.ableToPromote(plusY + 1)
+                                            when(promoting){
+                                                Promoting.NECESSARY -> {
+                                                    figure.promote()
+                                                    movePieceAt((checkedView as PieceView).figure,plusY + 1,plusX+1,coordinateX,coordinateY)
+                                                    checkedView = null
+                                                    layout.findViewById<ViewMoves>(R.id.available_moves).also {
+                                                        it.clean = true
+                                                        it.invalidate()
+                                                    }
+                                                }
+                                                Promoting.ABLE -> {
+                                                    oldX = figure.pieceImage.x
+                                                    oldY = figure.pieceImage.y
+                                                    chooseToPromoteNew.x = coordinateX
+                                                    chooseToPromoteNew.y = coordinateY
+                                                    promID[figure::class.simpleName]?.let {
+                                                        if (figure.side == Side.WHITE) {
+                                                            chooseToPromoteNew.setImageResource(it.promotedDown)
+                                                            chooseToPromoteOld.setImageResource(it.commonDown)
+                                                            chooseToPromoteOld.x = coordinateX
+                                                            chooseToPromoteOld.y = coordinateY - noteSize - separateLineSize
+                                                        } else {
+                                                            chooseToPromoteNew.setImageResource(it.promotedUP)
+                                                            chooseToPromoteOld.setImageResource(it.commonUP)
+                                                            chooseToPromoteOld.x = coordinateX
+                                                            chooseToPromoteOld.y = coordinateY + noteSize + separateLineSize
+                                                        }
+                                                    }
+                                                    layout.findViewById<WhiteCanvasView>(R.id.white_canvas).also {
+                                                        it.bringToFront()
+                                                        it.clean = false
+                                                        it.newPoint = Pair(chooseToPromoteNew.x,chooseToPromoteNew.y)
+                                                        it.otherPoint = Pair(chooseToPromoteOld.x,chooseToPromoteOld.y)
+                                                        it.layoutParam = figure.pieceImage.layoutParams
+                                                        it.invalidate()
+                                                    }
+                                                    startPromoting = true
+
+                                                    chooseToPromoteNew.layoutParams = figure.pieceImage.layoutParams
+                                                    appInfo.layout.addView(chooseToPromoteNew)
+                                                    chooseToPromoteOld.layoutParams = figure.pieceImage.layoutParams
+                                                    appInfo.layout.addView(chooseToPromoteOld)
+                                                    layout.findViewById<ViewMoves>(R.id.available_moves).also {
+                                                        it.clean = true
+                                                        it.invalidate()
+                                                    }
+                                                    figure.pieceImage.x = coordinateX
+                                                    figure.pieceImage.y = coordinateY
+                                                    moveInfo = MoveInfo(figure,plusX+1,plusY+1,coordinateX,coordinateY)
+                                                    // Drawing 2 figures and canvas
+                                                }
+                                                Promoting.NONE -> {
+                                                    movePieceAt((checkedView as PieceView).figure,plusY + 1,plusX+1,coordinateX,coordinateY)
+                                                    checkedView = null
+                                                    layout.findViewById<ViewMoves>(R.id.available_moves).also {
+                                                        it.clean = true
+                                                        it.invalidate()
+                                                    }
+                                                }
                                             }
                                         }
                                     }
@@ -215,7 +378,6 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
         layout.findViewById<ShogiView>(R.id.shogi_view).setOnTouchListener(touchBoard)
 
         val touchListener:View.OnClickListener = View.OnClickListener { v->
-            v.bringToFront()
             if (checkedView == null || checkedView != v && (checkedView as PieceView).figure.side == (v as PieceView).figure.side ) {
                 if(checkedView != null && checkedView != v) {
                         layout.findViewById<ViewMoves>(R.id.available_moves).also {
@@ -225,7 +387,17 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
                         (checkedView as ImageView).colorFilter = ColorMatrixColorFilter(ColorMatrix())
 
                 }
-
+                if (startPromoting){
+                    startPromoting = false
+                    appInfo.layout.removeView(chooseToPromoteNew)
+                    appInfo.layout.removeView(chooseToPromoteOld)
+                    layout.findViewById<WhiteCanvasView>(R.id.white_canvas).also {
+                        it.clean = true
+                        it.invalidate()
+                    }
+                    (checkedView as PieceView).x = oldX
+                    (checkedView as PieceView).y = oldY
+                }
                 checkedView = v
                 firstTouch = false
                 val matrixArr: FloatArray = floatArrayOf(0f,0f,0f,0f,0f,
@@ -251,20 +423,79 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
                 }
                 Log.i("COR","OutSide Run")
             } else {
-
-                if (checkedView != null && checkedView != v) {
+                if (checkedView != null && checkedView != v && !startPromoting) {
                     if ((checkedView as PieceView).figure.side != (v as PieceView).figure.side){
                         var selected = checkedView as PieceView
                         var enemy = v
                         runBlocking {
                             var w8Moves = moves?.await()
                             if(w8Moves?.contains(Pair(enemy.figure.col,enemy.figure.row)) == true) {
-                                movePieceAt(selected.figure,enemy.figure.row,enemy.figure.col,enemy.x,enemy.y)
-                                layout.findViewById<ViewMoves>(R.id.available_moves).also {
-                                    it.clean = true
-                                    it.invalidate()
+                                var figure = (checkedView as PieceView).figure
+                                var enemyFigure = enemy.figure
+                                var promoting = figure.ableToPromote(enemy.figure.row)
+                                when(promoting) {
+                                    Promoting.NECESSARY -> {
+                                        figure.promote()
+                                        movePieceAt(figure,enemyFigure.row,enemyFigure.col,enemy.x,enemy.y)
+                                        layout.findViewById<ViewMoves>(R.id.available_moves).also {
+                                            it.clean = true
+                                            it.invalidate()
+                                        }
+                                        (checkedView as ImageView).colorFilter = ColorMatrixColorFilter(ColorMatrix())
+                                        checkedView = null
+                                    }
+                                    Promoting.ABLE -> {
+                                        oldX = figure.pieceImage.x
+                                        oldY = figure.pieceImage.y
+                                        chooseToPromoteNew.x = enemy.x
+                                        chooseToPromoteNew.y = enemy.y
+                                        promID[figure::class.simpleName]?.let {
+                                            if (figure.side == Side.WHITE && orientation == Orientation.REVERSE ||
+                                                figure.side == Side.BLACK && orientation == Orientation.NORMAL) {
+                                                chooseToPromoteNew.setImageResource(it.promotedDown)
+                                                chooseToPromoteOld.setImageResource(it.commonDown)
+                                                chooseToPromoteOld.x = enemy.x
+                                                chooseToPromoteOld.y = enemy.y - noteSize - separateLineSize
+                                            } else {
+                                                chooseToPromoteNew.setImageResource(it.promotedUP)
+                                                chooseToPromoteOld.setImageResource(it.commonUP)
+                                                chooseToPromoteOld.x = enemy.x
+                                                chooseToPromoteOld.y = enemy.y + noteSize + separateLineSize
+                                            }
+                                        }
+                                        layout.findViewById<WhiteCanvasView>(R.id.white_canvas).also {
+                                            it.bringToFront()
+                                            it.clean = false
+                                            it.newPoint = Pair(chooseToPromoteNew.x,chooseToPromoteNew.y)
+                                            it.otherPoint = Pair(chooseToPromoteOld.x,chooseToPromoteOld.y)
+                                            it.layoutParam = figure.pieceImage.layoutParams
+                                            it.invalidate()
+                                        }
+                                        startPromoting = true
+
+                                        chooseToPromoteNew.layoutParams = figure.pieceImage.layoutParams
+                                        appInfo.layout.addView(chooseToPromoteNew)
+                                        chooseToPromoteOld.layoutParams = figure.pieceImage.layoutParams
+                                        appInfo.layout.addView(chooseToPromoteOld)
+                                        layout.findViewById<ViewMoves>(R.id.available_moves).also {
+                                            it.clean = true
+                                            it.invalidate()
+                                        }
+                                        figure.pieceImage.x = enemy.x
+                                        figure.pieceImage.y = enemy.y
+                                        moveInfo = MoveInfo(figure,enemyFigure.col,enemyFigure.row,enemy.x,enemy.y)
+                                    }
+                                    Promoting.NONE -> {
+                                        movePieceAt(figure,enemyFigure.row,enemyFigure.col,enemy.x,enemy.y)
+                                        layout.findViewById<ViewMoves>(R.id.available_moves).also {
+                                            it.clean = true
+                                            it.invalidate()
+                                        }
+                                        (checkedView as ImageView).colorFilter = ColorMatrixColorFilter(ColorMatrix())
+                                        checkedView = null
+                                    }
                                 }
-                                (checkedView as ImageView).colorFilter = ColorMatrixColorFilter(ColorMatrix())
+
                             } else {
                                 layout.findViewById<ViewMoves>(R.id.available_moves).also {
                                     it.clean = true
@@ -280,7 +511,7 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
                             }
                         }
                     }
-                } else {
+                } else if (!startPromoting){
                     layout.findViewById<ViewMoves>(R.id.available_moves).also {
                         it.clean = true
                         it.invalidate()
@@ -299,7 +530,6 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
 
         }
 
-        
         // Adding pawns
         for (i in 0..8){
             boardShogi[i+1,3] = Pawn(Side.WHITE,3,i+1,false,appInfo ,firstCellX + scaleX * (i) * delta,firstCellY + scaleY * 2 * delta,orientation,touchListener,false)

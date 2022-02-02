@@ -9,6 +9,7 @@ import android.widget.RelativeLayout
 import ru.popov.shogi.R
 import ru.popov.shogi.classes.AppInfo
 import ru.popov.shogi.classes.PieceView
+import ru.popov.shogi.classes.Promoting
 import ru.popov.shogi.classes.ShogiRules
 
 abstract class Figure {
@@ -29,11 +30,47 @@ abstract class Figure {
     protected abstract var promoted: Boolean
     protected abstract val appInfo:AppInfo
     protected abstract val orientation:Orientation
-    protected var eaten:Boolean = false
-
+    var eaten:Boolean = false
     protected abstract fun changeImages()
     protected abstract fun reset()
-    protected abstract fun promote(): Boolean
+    abstract fun promote(): Boolean
+    fun ableToPromote(row:Int):Promoting {
+        if (!promotable|| promoted) {
+            return Promoting.NONE
+        } else {
+            when(this::class.java.simpleName){
+                "Pawn" -> {
+                    if(this.side == Side.WHITE) {
+                        if (row == 9) return Promoting.NECESSARY
+                        if (row >= 7 ||this.row >=7) return Promoting.ABLE
+                    } else {
+                        if (row == 0) return Promoting.NECESSARY
+                        if (row <= 3 || this.row <=3) return Promoting.ABLE
+                    }
+                    return Promoting.NONE
+                }
+                "Horse" -> {
+                    if (this.side == Side.WHITE) {
+                        if (row >= 0) return Promoting.NECESSARY
+                        if (row >= 7 ||this.row >=7) return Promoting.ABLE
+                    } else {
+                        if (row <= 2) return Promoting.NECESSARY
+                        if (row <= 3 || this.row <=7) return Promoting.ABLE
+                    }
+                    return Promoting.NONE
+                }
+                else -> {
+                    if(this.side == Side.WHITE) {
+                        if (row >= 7 ||this.row >=7) return Promoting.ABLE
+                    } else {
+                        if (row <= 3 || this.row <=3) return Promoting.ABLE
+                    }
+                    return Promoting.NONE
+                }
+
+            }
+        }
+    }
 
     fun changeSide() {
         reset()
@@ -154,10 +191,10 @@ class Pawn(override var side: Side, override var row: Int, override var col: Int
         } else {
             ShogiRules.GOLD_BLACK
         }
-
-
+        promoted = true
         return true
     }
+
 
     override fun reset() {
         name = Pawn.name
@@ -282,11 +319,13 @@ class Silver(override var side: Side, override var row: Int, override var col: I
     override fun promote(): Boolean {
         name = promotedName
         abbrName = abbrPromotedName
+        pieceImage.setImageResource(promotedID)
         rules = if (side == Side.WHITE) {
             ShogiRules.GOLD_WHITE
         } else {
             ShogiRules.GOLD_BLACK
         }
+        promoted = true
         return true
     }
 
@@ -494,11 +533,13 @@ class Lance(override var side: Side, override var row: Int, override var col: In
     override fun promote(): Boolean {
         name = promotedName
         abbrName = abbrPromotedName
+        pieceImage.setImageResource(promotedID)
         rules = if (side == Side.WHITE) {
             ShogiRules.GOLD_WHITE
         } else {
             ShogiRules.GOLD_BLACK
         }
+        promoted = true
         return true
     }
 
@@ -611,11 +652,13 @@ class Knight(override var side: Side, override var row: Int, override var col: I
     override fun promote(): Boolean {
         name = promotedName
         abbrName = abbrPromotedName
+        pieceImage.setImageResource(promotedID)
         rules = if (side == Side.WHITE) {
             ShogiRules.GOLD_WHITE
         } else {
             ShogiRules.GOLD_BLACK
         }
+        promoted = true
         return true
     }
 
@@ -727,11 +770,13 @@ class Rook(override var side: Side, override var row: Int, override var col: Int
     override fun promote(): Boolean {
         name = promotedName
         abbrName = abbrPromotedName
+        pieceImage.setImageResource(promotedID)
         rules = if (side == Side.WHITE) {
             ShogiRules.DRAGON
         } else {
             ShogiRules.DRAGON
         }
+        promoted = true
         return true
     }
 
@@ -834,11 +879,13 @@ class Bishop(override var side: Side, override var row: Int, override var col: I
     override fun promote(): Boolean {
         name = promotedName
         abbrName = abbrPromotedName
+        pieceImage.setImageResource(promotedID)
         rules = if (side == Side.WHITE) {
             ShogiRules.HORSE
         } else {
             ShogiRules.HORSE
         }
+        promoted = true
         return true
     }
 

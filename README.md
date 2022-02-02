@@ -1,6 +1,10 @@
 # Shogi Android Application 
 ## My little developer diary
 
+### 02.02.2022
+Added promoting of pieces <br>
+![Promoting](Screenshots/promoting.gif)
+
 ### 01.02.2022
 Added counting of eaten pieces <br>
 ![CountIn](Screenshots/counts.gif)
