@@ -2,6 +2,7 @@
 ## My little developer diary
 
 ### 02.02.2022
+#### Added AMAZING ULTRA SUPER MEGA MUSIC THEME by [ilbond](https://github.com/ilbond)
 #### Added promoting of pieces <br>
 
 ![Promoting](Screenshots/promoting.gif)
