@@ -19,10 +19,15 @@
         <entry key="..\:/Users/User/AndroidStudioProjects/Shogi/app/src/main/res/drawable/p_lance_1.xml" value="0.21510416666666668" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Shogi/app/src/main/res/drawable/rook_0.xml" value="0.22135416666666666" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Shogi/app/src/main/res/drawable/rook_1.xml" value="0.22135416666666666" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Shogi/app/src/main/res/drawable/socials.xml" value="0.3828125" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Shogi/app/src/main/res/drawable/test.xml" value="0.22135416666666666" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Shogi/app/src/main/res/layout/activity_main.xml" value="0.19114583333333332" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Shogi/app/src/main/res/layout/cell.xml" value="0.1" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Shogi/app/src/main/res/layout/fragment_menu.xml" value="0.20520833333333333" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Shogi/app/src/main/res/layout/fragment_shogi.xml" value="0.25" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Shogi/app/src/main/res/layout/main_menu.xml" value="0.3654891304347826" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Shogi/app/src/main/res/layout/multiplayer_fragment_shogi.xml" value="0.19791666666666666" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Shogi/app/src/main/res/layout/multiplayer_shogi_fragment.xml" value="0.20520833333333333" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Shogi/app/src/main/res/layout/test.xml" value="0.19895833333333332" />
       </map>
     </option>

@@ -16,11 +16,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
-import android.widget.TextView
-import androidx.databinding.DataBindingUtil
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import okhttp3.*
 import ru.popov.shogi.MainActivity
 import ru.popov.shogi.R
 import ru.popov.shogi.classes.figures.Orientation
@@ -32,6 +28,7 @@ class ShogiFragment : Fragment() {
 
     private lateinit var inflater:LayoutInflater
     private lateinit var shogi:ShogiModel
+
     private final val bitmaps = HashMap<Int, Bitmap> ()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,11 +73,12 @@ class ShogiFragment : Fragment() {
         binding.separateLineSize = separateLineSize
         binding.boardSize = boardSize
 
+        val client = OkHttpClient()
+        val request: Request = Request.Builder().url("ws://52.149.149.222:8080/chat").build()
 
         val game = activity?.let {
             ShogiModel(Orientation.NORMAL,topY.toFloat(),topX.toFloat(),noteSize, separateLineSize, layout,
-                it,layoutParams,top.toFloat(),left.toFloat()
-            )
+                it,layoutParams,top.toFloat(),left.toFloat())
         }
         return binding.root
     }
@@ -95,4 +93,5 @@ class ShogiFragment : Fragment() {
     override fun onStart() {
         super.onStart()
     }
+
 }

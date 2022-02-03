@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import kotlinx.coroutines.*
+import okhttp3.*
 import ru.popov.shogi.R
 import ru.popov.shogi.classes.figures.*
 
@@ -23,7 +24,9 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
     private val blackBundle:BundleView
     private val whiteCounts:CountsView
     private val blackCounts:CountsView
-
+    private val yourSide:Side = Side.BLACK
+    private val turn:Side = Side.WHITE
+    private lateinit var webSocket:WebSocket
     private var boardShogi:BoardArray = BoardArray()
 
     companion object {
@@ -39,6 +42,7 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
     }
 
     init {
+
         if (orientation == Orientation.NORMAL) {
             whiteCounts = layout.findViewById(R.id.bottom_counts)
             blackCounts = layout.findViewById(R.id.upper_counts)
@@ -578,4 +582,6 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
         val pieces:ArrayList<ImageView> = ArrayList();
         return pieces
     }
+
+
 }

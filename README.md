@@ -1,6 +1,13 @@
 # Shogi Android Application 
 ## My little developer diary
 
+### 03.02.2022
+#### Added menu <br>
+![MainMenu](Screenshots/MainMenu.jpg)
+
+#### Added multiplayer <br>
+![Multiplayer](Screenshots/online.gif)
+
 ### 02.02.2022
 #### Added AMAZING ULTRA SUPER MEGA MUSIC THEME by [ilbond](https://github.com/ilbond)
 #### Added promoting of pieces <br>

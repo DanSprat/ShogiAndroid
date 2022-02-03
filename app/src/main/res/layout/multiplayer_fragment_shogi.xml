@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable name="noteSize" type="Integer" />
+        <variable name="separateLineSize" type="Integer" />
+        <variable name="boardSize" type="Integer" />
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/layout_SHG"
+        tools:context=".classes.MultiplayerShogiFragment">
+
+
+        <ru.popov.shogi.classes.ShogiView
+            android:id="@+id/shogi_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:separateLineSize="@{separateLineSize}"
+            app:noteSize="@{noteSize}"/>
+
+        <ru.popov.shogi.classes.WhiteCanvasView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/white_canvas"
+            app:boardWidth="@{boardSize}"
+            app:cell="@{noteSize}"
+            app:line="@{separateLineSize}">
+
+        </ru.popov.shogi.classes.WhiteCanvasView>
+
+
+        <ru.popov.shogi.classes.ViewMoves
+            android:id="@+id/available_moves"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:boardSize="@{boardSize}"
+            app:cellSize="@{noteSize}"
+            app:lineSize="@{separateLineSize}" />
+
+
+
+        <ru.popov.shogi.classes.BundleView
+            app:boardSZ="@{boardSize}"
+            app:isLower="1"
+            android:id="@+id/lower_bundle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+        </ru.popov.shogi.classes.BundleView>
+
+        <ru.popov.shogi.classes.BundleView
+            android:id="@+id/upper_bundle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:boardSZ="@{boardSize}"
+            app:isLower="-1">
+
+        </ru.popov.shogi.classes.BundleView>
+
+
+        <ru.popov.shogi.classes.CountsView
+            app:board="@{boardSize}"
+            app:inLow="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/bottom_counts"
+            >
+        </ru.popov.shogi.classes.CountsView>
+
+        <ru.popov.shogi.classes.CountsView
+            app:inLow="-1"
+            app:board="@{boardSize}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/upper_counts">
+        </ru.popov.shogi.classes.CountsView>
+
+
+
+    </RelativeLayout>
+</layout>
