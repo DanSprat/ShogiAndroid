@@ -1,6 +1,10 @@
 # Shogi Android Application 
 ## My little developer diary
 
+### 04.02.2022
+#### Added droping pieces
+![Dropping](Screenshots/Drops.gif)
+
 ### 03.02.2022
 #### Added menu <br>
 ![MainMenu](Screenshots/MainMenu.jpg)
