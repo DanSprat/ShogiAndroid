@@ -24,8 +24,10 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
     private val blackBundle:BundleView
     private val whiteCounts:CountsView
     private val blackCounts:CountsView
-    private val yourSide:Side = Side.BLACK
-    private val turn:Side = Side.WHITE
+    private var firstX = 0f
+    private var firstY = 0f
+    private var delta = 0f
+    private var turn:Side = Side.WHITE
     private lateinit var webSocket:WebSocket
     private var boardShogi:BoardArray = BoardArray()
 
@@ -57,7 +59,7 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
         reset()
     }
     
-    private fun getXScale(orientation: Orientation,top:Float,left:Float):Int{
+    private fun getXScale(orientation: Orientation):Int{
         return if (orientation == Orientation.NORMAL) {
             1
         } else {
@@ -65,11 +67,11 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
         }
     }
 
-    private fun getYScale(orientation: Orientation,top:Float,left:Float):Int{
+    private fun getYScale(orientation: Orientation):Int{
         return if (orientation == Orientation.NORMAL) {
             -1
         } else {
-            -1
+            1
         }
     }
 
@@ -78,26 +80,86 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
         var currentX = figure.col
         var currentY = figure.row
         val rules = figure.rules
-        for (i in 0 until rules.size){
-            val vectorMove = rules[i]
-            var x = vectorMove.vector.first
-            var y = vectorMove.vector.second
-            var length = 0
-            var isEat = false
-            for(j in 0 until vectorMove.length){
-                if (currentX + x <1 || currentX + x > 9 || currentY + y < 1 || currentY + y >9 ||
-                    boardShogi[currentX + x,currentY + y]?.side == figure.side || isEat) break
-
-                boardShogi[currentX + x, currentY + y]?.let {
-                    isEat = it.side != figure.side
+        var list:ArrayList<Pair<Int,Int>> = ArrayList()
+        if(figure.eaten){
+            when(figure::class.java.simpleName) {
+                "Pawn" -> {
+                    for (i in 1..9){
+                        for (j in 1..9){
+                            if (j==1 || j ==9){
+                                if (j==1 && figure.side == Side.BLACK)
+                                    continue
+                                if (j==9 && figure.side == Side.WHITE)
+                                    continue
+                            }
+                            var it = boardShogi[i,j]
+                            if (it != null){
+                                if (it.javaClass.simpleName == "Pawn" && !it.promoted && it.side == figure.side){
+                                    list.clear()
+                                    break
+                               }
+                           } else {
+                               list.add(Pair(i,j))
+                           }
+                        }
+                        list.forEach { moves.add(it) }
+                    }
                 }
-                currentX+=x
-                currentY+=y
-                moves.add(Pair(currentX,currentY))
-                length++
+                "Knight"-> {
+                    var k = 1
+                    var m = 9
+                    if (figure.side == Side.WHITE) m =7
+                    else k = 3
+                    for (i in 1..9){
+                        for (j in k..m){
+                            if (boardShogi[i,j] == null) {
+                                moves.add(Pair(i,j))
+                            }
+                        }
+                    }
+                }
+                "Lance" -> {
+                    var k = 1
+                    var m = 9
+                    if (figure.side == Side.WHITE) m = 8
+                    else k = 2
+                    for (i in 1..9){
+                        for (j in k..m){
+                            if (boardShogi[i,j] == null) {
+                                moves.add(Pair(i,j))
+                            }
+                        }
+                    }
+                }
+                else -> {
+                    for (i in 1..9)
+                        for (j in 1..9)
+                            if (boardShogi[i,j] == null)
+                                moves.add(Pair(i,j))
+                }
             }
-            currentX= figure.col
-            currentY = figure.row
+        } else {
+            for (i in 0 until rules.size){
+                val vectorMove = rules[i]
+                var x = vectorMove.vector.first
+                var y = vectorMove.vector.second
+                var length = 0
+                var isEat = false
+                for(j in 0 until vectorMove.length){
+                    if (currentX + x <1 || currentX + x > 9 || currentY + y < 1 || currentY + y >9 ||
+                        boardShogi[currentX + x,currentY + y]?.side == figure.side || isEat) break
+
+                    boardShogi[currentX + x, currentY + y]?.let {
+                        isEat = it.side != figure.side
+                    }
+                    currentX+=x
+                    currentY+=y
+                    moves.add(Pair(currentX,currentY))
+                    length++
+                }
+                currentX= figure.col
+                currentY = figure.row
+            }
         }
         return moves
     }
@@ -119,8 +181,19 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
             }
             it.eaten = true
         }
+        turn = turn.next()
+        if (figure.eaten){
+            if(figure.side == Side.WHITE){
+                whiteCounts.decrement(figure)
+            } else {
+                blackCounts.decrement(figure)
+            }
+            figure.eaten = false
+            figure.pieceImage.layoutParams = RelativeLayout.LayoutParams(layoutParams.width,layoutParams.height)
+        } else {
+            boardShogi[figure.col,figure.row] = null
+        }
 
-        boardShogi[figure.col,figure.row] = null
         boardShogi[col,row] = figure
         figure.row = row
         figure.col = col
@@ -134,12 +207,16 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
         figuresOnBoard.clear();
         handBlack.clear()
         handWhite.clear()
+        turn = Side.WHITE
 
 
-        val appInfo = AppInfo(context, layout, layoutParams)
+        val appInfo = AppInfo(context, layout, layoutParams).also {
+            blackBundle.appInfo = it
+            whiteBundle.appInfo = it
+        }
         val delta = separateLineSize + noteSize
-        val scaleX  = getXScale(orientation,top, left)
-        val scaleY = getYScale(orientation, top, left)
+        val scaleX  = getXScale(orientation)
+        val scaleY = getYScale(orientation)
         var firstCellX = 0f
         var firstCellY = 0f
         if (orientation == Orientation.NORMAL){
@@ -149,6 +226,8 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
             firstCellX = left + 8 * delta
             firstCellY = top
         }
+
+
         var startPromoting = false
         var moves: Deferred<HashSet<Pair<Int,Int>>>? = null
         var checkedView:View? = null
@@ -382,7 +461,7 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
         layout.findViewById<ShogiView>(R.id.shogi_view).setOnTouchListener(touchBoard)
 
         val touchListener:View.OnClickListener = View.OnClickListener { v->
-            if (checkedView == null || checkedView != v && (checkedView as PieceView).figure.side == (v as PieceView).figure.side ) {
+            if ((v as PieceView).figure.side == turn && (checkedView == null || checkedView != v && (checkedView as PieceView).figure.side == v.figure.side)  ) {
                 if(checkedView != null && checkedView != v) {
                         layout.findViewById<ViewMoves>(R.id.available_moves).also {
                             it.clean = true
@@ -515,7 +594,7 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
                             }
                         }
                     }
-                } else if (!startPromoting){
+                } else if (!startPromoting && v.figure.side == turn){
                     layout.findViewById<ViewMoves>(R.id.available_moves).also {
                         it.clean = true
                         it.invalidate()

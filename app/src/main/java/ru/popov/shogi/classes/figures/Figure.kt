@@ -27,7 +27,7 @@ abstract class Figure {
     abstract var rules: ShogiRules
     abstract var side: Side
     protected abstract val promotable: Boolean
-    protected abstract var promoted: Boolean
+    abstract var promoted: Boolean
     protected abstract val appInfo:AppInfo
     protected abstract val orientation:Orientation
     var eaten:Boolean = false
@@ -35,7 +35,7 @@ abstract class Figure {
     protected abstract fun reset()
     abstract fun promote(): Boolean
     fun ableToPromote(row:Int):Promoting {
-        if (!promotable|| promoted) {
+        if (!promotable|| promoted || eaten) {
             return Promoting.NONE
         } else {
             when(this::class.java.simpleName){

@@ -16,7 +16,7 @@ import ru.popov.shogi.classes.figures.*
 class BundleView(context: Context?, attrs: AttributeSet): View(context,attrs) {
 
     companion object {
-        private val firstAdded = false
+        private var firstAdded = false
         private val hashMap:HashMap<String,Int> = HashMap()
 
         init {
@@ -29,13 +29,18 @@ class BundleView(context: Context?, attrs: AttributeSet): View(context,attrs) {
             hashMap["Rook"] = 6
         }
     }
+
     var isLower:Int = 0
     var boardSZ:Int = 0
     var layoutParam:ViewGroup.LayoutParams
+    var appInfo:AppInfo? = null
+    var firstCellX = 0f
+    var firstCellY = 0f
     var layoutParamsLittle:ViewGroup.LayoutParams
     private var leftCoord:Int = 0
     private var topCoord:Int = 0
     private var widthOneCell:Int = 0
+
 
     init {
         var draw = resources.getDrawable(R.drawable.bishop_0,context?.theme)
@@ -47,9 +52,11 @@ class BundleView(context: Context?, attrs: AttributeSet): View(context,attrs) {
             }
         }
     }
+
     fun moveToBundle(figure: Figure){
         if (!firstAdded) {
             layoutParamsLittle = figure.pieceImage.layoutParams
+            firstAdded = true
         }
 
         figure.pieceImage.layoutParams = RelativeLayout.LayoutParams(layoutParam.width,layoutParam.height)
@@ -64,6 +71,9 @@ class BundleView(context: Context?, attrs: AttributeSet): View(context,attrs) {
     override fun onDraw(canvas: Canvas?) {
         val paddingX = ((resources.displayMetrics.widthPixels - boardSZ) / 2 )
         val paddingY:Int = (resources.displayMetrics.heightPixels - boardSZ) / 2
+
+
+
         val relation:Int = (0.1 * paddingY).toInt()
         val paddingBundleX:Int = paddingX
         val paddingBundleY:Int = if (isLower == 1) {

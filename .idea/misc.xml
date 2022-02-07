@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/User/AndroidStudioProjects/Shogi/app/src/main/res/drawable/background.xml" value="0.22135416666666666" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Shogi/app/src/main/res/drawable/bishop.xml" value="0.22135416666666666" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Shogi/app/src/main/res/drawable/bishop_0.xml" value="0.12037037037037036" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Shogi/app/src/main/res/drawable/gold.xml" value="0.22135416666666666" />
@@ -37,5 +38,12 @@
   </component>
   <component name="ProjectType">
     <option name="id" value="Android" />
+  </component>
+  <component name="VisualizationToolProject">
+    <option name="state">
+      <ProjectState>
+        <option name="scale" value="0.19791666666666666" />
+      </ProjectState>
+    </option>
   </component>
 </project>

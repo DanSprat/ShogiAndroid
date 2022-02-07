@@ -16,6 +16,7 @@ import ru.popov.shogi.classes.figures.DisplacementInfo
 import ru.popov.shogi.classes.figures.Orientation
 import ru.popov.shogi.classes.figures.Side
 import ru.popov.shogi.databinding.FragmentShogiBinding
+import java.io.IOException
 
 class MultiplayerShogiFragment:Fragment() {
     private lateinit var inflater: LayoutInflater
@@ -65,15 +66,39 @@ class MultiplayerShogiFragment:Fragment() {
         binding.separateLineSize = separateLineSize
         binding.boardSize = boardSize
 
-        val client = OkHttpClient()
-        val request: Request = Request.Builder().url("ws://52.149.149.222:8080/chat").build()
-        val webSocket = client.newWebSocket(request, SocketListener())
 
+        var callback = object: Callback {
+            override fun onFailure(call: Call, e: IOException) {
 
-        shogi = activity?.let {
-            ShogiModelMultiplayer(
-                Orientation.NORMAL,topY.toFloat(),topX.toFloat(),noteSize, separateLineSize, layout,
-                it,layoutParams,top.toFloat(),left.toFloat(),webSocket,Side.WHITE,Side.BLACK)
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                var isWhite = response.body()?.string()
+                val clientWS = OkHttpClient()
+                val request: Request = Request.Builder().url("ws://52.149.149.222:8080/chat").addHeader("SSH","128").build()
+                val webSocket = clientWS.newWebSocket(request, SocketListener())
+                var side = if (isWhite == "false") {
+                    Side.BLACK
+                } else {
+                    Side.WHITE
+                }
+                activity?.runOnUiThread{
+                    shogi = activity?.let {
+                        ShogiModelMultiplayer(
+                            Orientation.NORMAL,topY.toFloat(),topX.toFloat(),noteSize, separateLineSize, layout,
+                            it,layoutParams,top.toFloat(),left.toFloat(),webSocket,side,Side.WHITE)
+                    }
+                }
+
+            }
+
+        }
+        var client = OkHttpClient()
+        var requestHHTP = Request.Builder().url("http://52.149.149.222:8080/room/125").build()
+        var call = client.newCall(requestHHTP)
+        call.enqueue(callback)
+        while (!call.isExecuted){
+
         }
         return binding.root
     }
