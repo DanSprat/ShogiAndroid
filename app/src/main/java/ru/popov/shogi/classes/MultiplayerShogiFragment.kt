@@ -11,6 +11,7 @@ import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
 import com.google.gson.Gson
 import okhttp3.*
+import ru.popov.shogi.BuildConfig
 import ru.popov.shogi.R
 import ru.popov.shogi.classes.figures.DisplacementInfo
 import ru.popov.shogi.classes.figures.Orientation
@@ -18,123 +19,101 @@ import ru.popov.shogi.classes.figures.Side
 import ru.popov.shogi.databinding.FragmentShogiBinding
 import java.io.IOException
 
-class MultiplayerShogiFragment:Fragment() {
+class MultiplayerShogiFragment : Fragment() {
     private lateinit var inflater: LayoutInflater
     private var shogi: ShogiModelMultiplayer? = null
     var gson = Gson()
 
-    private final val bitmaps = HashMap<Int, Bitmap> ()
+    private val bitmaps = HashMap<Int, Bitmap>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
+
     @SuppressLint("ResourceType", "UseCompatLoadingForDrawables")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        val binding: FragmentShogiBinding = FragmentShogiBinding.inflate(inflater,container,false)
+        val binding = FragmentShogiBinding.inflate(inflater, container, false)
         val layout: RelativeLayout = binding.root.findViewById(R.id.layout_SHG)
-        val scaleNote:Float = 0.9f
-        val relation:Float = 0.1f
-
-
-        val dm = resources.displayMetrics
-        val displayWidth = dm.widthPixels
         this.inflater = inflater
-        var paddingX:Int = ((displayWidth*0.1).toInt() / 2)
-        var boardSize:Int = displayWidth - paddingX
-        val noteSize:Int = (boardSize / (10 * relation + 9)).toInt()
-        val separateLineSize:Int = (relation * noteSize).toInt()
 
+        val bl = ShogiBoardLayoutHelper.compute(resources, context?.theme)
+        Log.i("Size", "Top: ${bl.top}, Left: ${bl.left} ")
+        Log.i("Size", "Width: ${resources.displayMetrics.widthPixels}, Height: ${resources.displayMetrics.heightPixels} ")
+        binding.noteSize = bl.noteSize
+        binding.separateLineSize = bl.separateLineSize
+        binding.boardSize = bl.boardSize
 
-        boardSize = 10 * separateLineSize + 9 * noteSize
-
-        val test1 = resources.getDrawable(R.drawable.rook_0, context?.theme)
-
-        val rel:Float = test1.intrinsicHeight.toFloat() / (noteSize * scaleNote)
-        val layoutParams: ViewGroup.LayoutParams = ViewGroup.LayoutParams((test1.intrinsicWidth / rel).toInt(),(test1.intrinsicHeight / rel).toInt())
-        val top = (dm.heightPixels - boardSize) / 2
-        val left = (dm.widthPixels - boardSize) / 2
-
-        Log.i("Size", "Top: $top, Left: $left ")
-        val topX = (displayWidth - boardSize) / 2 + separateLineSize + noteSize / 2 - layoutParams.width / 2
-        val topY = (dm.heightPixels - boardSize) / 2 + separateLineSize + noteSize / 2 - layoutParams.height / 2
-
-        Log.i("Size", "Width: ${dm.widthPixels}, Height: ${dm.heightPixels} ")
-        binding.noteSize = noteSize
-        binding.separateLineSize = separateLineSize
-        binding.boardSize = boardSize
-
-
-        var callback = object: Callback {
-            override fun onFailure(call: Call, e: IOException) {
-
-            }
+        val callback = object : Callback {
+            override fun onFailure(call: Call, e: IOException) {}
 
             override fun onResponse(call: Call, response: Response) {
-                var isWhite = response.body()?.string()
+                val isWhite = response.body()?.string()
                 val clientWS = OkHttpClient()
-                val request: Request = Request.Builder().url("ws://52.149.149.222:8080/chat").addHeader("SSH","128").build()
+                val request: Request = Request.Builder()
+                    .url(BuildConfig.SHOGI_WS_URL)
+                    .addHeader("SSH", "128")
+                    .build()
                 val webSocket = clientWS.newWebSocket(request, SocketListener())
-                var side = if (isWhite == "false") {
-                    Side.BLACK
-                } else {
-                    Side.WHITE
-                }
-                activity?.runOnUiThread{
+                val side = if (isWhite == "false") Side.BLACK else Side.WHITE
+                activity?.runOnUiThread {
                     shogi = activity?.let {
                         ShogiModelMultiplayer(
-                            Orientation.NORMAL,topY.toFloat(),topX.toFloat(),noteSize, separateLineSize, layout,
-                            it,layoutParams,top.toFloat(),left.toFloat(),webSocket,side,Side.WHITE)
+                            Orientation.NORMAL,
+                            bl.topY.toFloat(),
+                            bl.topX.toFloat(),
+                            bl.noteSize,
+                            bl.separateLineSize,
+                            layout,
+                            it,
+                            bl.layoutParams,
+                            bl.top.toFloat(),
+                            bl.left.toFloat(),
+                            webSocket,
+                            side,
+                            Side.WHITE
+                        )
                     }
                 }
-
             }
-
         }
-        var client = OkHttpClient()
-        var requestHHTP = Request.Builder().url("http://52.149.149.222:8080/room/125").build()
-        var call = client.newCall(requestHHTP)
-        call.enqueue(callback)
-        while (!call.isExecuted){
-
-        }
+        val client = OkHttpClient()
+        val requestHttp = Request.Builder().url(BuildConfig.SHOGI_ROOM_URL).build()
+        client.newCall(requestHttp).enqueue(callback)
         return binding.root
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
     }
-
 
     @SuppressLint("ResourceType")
     override fun onStart() {
         super.onStart()
     }
 
-    inner class SocketListener: WebSocketListener(){
+    inner class SocketListener : WebSocketListener() {
         override fun onOpen(webSocket: WebSocket, response: Response) {
             super.onOpen(webSocket, response)
         }
 
         override fun onMessage(webSocket: WebSocket, text: String) {
             super.onMessage(webSocket, text)
-            Log.i("Moving:",text)
-            var displacementInfo = gson.fromJson(text,DisplacementInfo::class.java)
+            Log.i("Moving:", text)
+            val displacementInfo = gson.fromJson(text, DisplacementInfo::class.java)
             shogi?.movePieceAt(displacementInfo)
-
         }
 
         override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
             super.onClosed(webSocket, code, reason)
-            Log.i("Moving: "," Closed " +reason.toString())
+            Log.i("Moving: ", " Closed $reason")
         }
 
         override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
             super.onFailure(webSocket, t, response)
-            Log.i("Moving ","Failure "+t.message)
+            Log.i("Moving ", "Failure ${t.message}")
         }
     }
 }

@@ -68,7 +68,7 @@ class BundleView(context: Context?, attrs: AttributeSet): View(context,attrs) {
         }
         figure.pieceImage.y = topCoord.toFloat()
     }
-    override fun onDraw(canvas: Canvas?) {
+    override fun onDraw(canvas: Canvas) {
         val paddingX = ((resources.displayMetrics.widthPixels - boardSZ) / 2 )
         val paddingY:Int = (resources.displayMetrics.heightPixels - boardSZ) / 2
 
@@ -93,7 +93,7 @@ class BundleView(context: Context?, attrs: AttributeSet): View(context,attrs) {
         paint.color = Color.argb(75,26,26,26)
         paint.strokeWidth = 3f
 
-        canvas?.drawRect(paddingBundleX.toFloat(),
+        canvas.drawRect(paddingBundleX.toFloat(),
             paddingBundleY.toFloat(),
             (paddingBundleX + widthOneCell * 7).toFloat(),
             (paddingBundleY + isLower * heightOnePiece).toFloat(),paint)
@@ -121,7 +121,7 @@ class BundleView(context: Context?, attrs: AttributeSet): View(context,attrs) {
                 var drawable = resources.getDrawable(bottomArray[i],null).also {
                     it.colorFilter = ColorMatrixColorFilter(ColorMatrix(matrixArr))
                 }
-                canvas?.drawBitmap(drawable.toBitmap(),null, Rect((startX + i * widthOneCell),topCoord,
+                canvas.drawBitmap(drawable.toBitmap(),null, Rect((startX + i * widthOneCell),topCoord,
                     (startX + i * widthOneCell + layoutParam.width),topCoord + layoutParam.height),paint)
             }
         } else {
@@ -129,7 +129,7 @@ class BundleView(context: Context?, attrs: AttributeSet): View(context,attrs) {
                 var drawable = resources.getDrawable(upperArray[i],null).also {
                     it.colorFilter = ColorMatrixColorFilter(ColorMatrix(matrixArr))
                 }
-                canvas?.drawBitmap(drawable.toBitmap(),null, Rect((startX + i * widthOneCell),topCoord,
+                canvas.drawBitmap(drawable.toBitmap(),null, Rect((startX + i * widthOneCell),topCoord,
                     (startX + i * widthOneCell + layoutParam.width),topCoord + layoutParam.height),paint)
             }
         }

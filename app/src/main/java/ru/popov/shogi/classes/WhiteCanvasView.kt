@@ -21,17 +21,17 @@ class WhiteCanvasView(context: Context?, attrs: AttributeSet): View(context,attr
 
     private var left:Float = 0f
         get() = ((resources.displayMetrics.widthPixels - boardWidth) / 2 ).toFloat()
-    override fun onDraw(canvas: Canvas?) {
+    override fun onDraw(canvas: Canvas) {
         if(!clean){
             var paint:Paint = Paint()
             paint.color = Color.argb(150,255,255,255)
-            canvas?.drawRect(left,top,left+boardWidth,top+boardWidth,paint)
+            canvas.drawRect(left,top,left+boardWidth,top+boardWidth,paint)
             paint.color = Color.argb(150,255,0,0)
             var diffX:Float = (cell - layoutParam.width) / 2f
             var diffY:Float = (cell - layoutParam.height) / 2f
-            canvas?.drawRect(newPoint.first - diffX ,newPoint.second - diffY ,newPoint.first -diffX + cell,newPoint.second-diffY+cell,paint)
+            canvas.drawRect(newPoint.first - diffX ,newPoint.second - diffY ,newPoint.first -diffX + cell,newPoint.second-diffY+cell,paint)
             paint.color = Color.argb(150,0,0,0)
-            canvas?.drawRect(otherPoint.first-diffX,otherPoint.second-diffY,otherPoint.first-diffX + cell,otherPoint.second- diffY +cell,paint)
+            canvas.drawRect(otherPoint.first-diffX,otherPoint.second-diffY,otherPoint.first-diffX + cell,otherPoint.second- diffY +cell,paint)
         }
     }
 }

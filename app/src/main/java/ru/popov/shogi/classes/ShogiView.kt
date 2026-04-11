@@ -14,7 +14,7 @@ class ShogiView(context: Context?, attrs: AttributeSet): View(context,attrs) {
 
     private final val relation = 0.10
 
-    override fun onDraw(canvas: Canvas?) {
+    override fun onDraw(canvas: Canvas) {
         val paint = Paint()
 
         val noteSize = this.noteSize
@@ -31,14 +31,14 @@ class ShogiView(context: Context?, attrs: AttributeSet): View(context,attrs) {
 
         Log.i("Size", "Top: $paddingY, Left: $paddingX ")
         Log.i("Size", "Width: ${resources.displayMetrics.widthPixels}, Height: ${resources.displayMetrics.heightPixels} ")
-        canvas?.drawBitmap(board,null,Rect(paddingX,paddingY,paddingX + boardSize,paddingY+boardSize),paint)
+        canvas.drawBitmap(board,null,Rect(paddingX,paddingY,paddingX + boardSize,paddingY+boardSize),paint)
         paint.color = Color.rgb(0,0,0)
         paint.style = Paint.Style.FILL
         val step:Int = separateLineSize + noteSize
 
         for(i in 0..9){
-            canvas?.drawRect(paddingFloatX + i*step ,paddingFloatY,paddingFloatX + separateLineSize + i*step,paddingFloatY+boardSize,paint)
-            canvas?.drawRect(paddingFloatX,paddingFloatY + i*step,paddingFloatX + boardSize,paddingFloatY +separateLineSize +i* step,paint)
+            canvas.drawRect(paddingFloatX + i*step ,paddingFloatY,paddingFloatX + separateLineSize + i*step,paddingFloatY+boardSize,paint)
+            canvas.drawRect(paddingFloatX,paddingFloatY + i*step,paddingFloatX + boardSize,paddingFloatY +separateLineSize +i* step,paint)
         }
     }
 

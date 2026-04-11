@@ -15,6 +15,6 @@ class TestVies(context: Context?, attrs: AttributeSet): View(context,attrs) {
 
         }
     }
-    override fun onDraw(canvas: Canvas?) {
+    override fun onDraw(canvas: Canvas) {
     }
 }

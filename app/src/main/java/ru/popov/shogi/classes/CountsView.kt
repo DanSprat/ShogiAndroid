@@ -41,7 +41,7 @@ class CountsView(context: Context?, attrs: AttributeSet): View(context,attrs) {
     }
 
 
-    override fun onDraw(canvas: Canvas?) {
+    override fun onDraw(canvas: Canvas) {
         var mTextBoundRect:Rect = Rect()
         var string:String = "1"
         val paddingX = ((resources.displayMetrics.widthPixels - board) / 2 )
@@ -67,11 +67,11 @@ class CountsView(context: Context?, attrs: AttributeSet): View(context,attrs) {
         for(x in hashMap.entries) {
             var info = x.value
             if (info.count > 0){
-                canvas?.drawRect(Rect(paddingBundleX + marginLeft + info.position * widthOneCell,paddingBundleY,paddingBundleX + marginLeft + info.position * widthOneCell + countBoxSize,paddingBundleY + countBoxSize),paint)
+                canvas.drawRect(Rect(paddingBundleX + marginLeft + info.position * widthOneCell,paddingBundleY,paddingBundleX + marginLeft + info.position * widthOneCell + countBoxSize,paddingBundleY + countBoxSize),paint)
                 paintText.getTextBounds(string,0,string.length,mTextBoundRect)
                 var textWidth = paintText.measureText(string)
                 var textHeight = mTextBoundRect.height()
-                canvas?.drawText(info.count.toString(), ((paddingBundleX + widthOneCell / 2 - textWidth / 2 + info.position * widthOneCell)),
+                canvas.drawText(info.count.toString(), ((paddingBundleX + widthOneCell / 2 - textWidth / 2 + info.position * widthOneCell)),
                     (paddingBundleY + countBoxSize - (countBoxSize - textHeight) / 2).toFloat(),paintText)
             }
         }

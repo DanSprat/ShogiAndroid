@@ -26,7 +26,7 @@ class ViewMoves(context:Context ,attrs: AttributeSet):View(context,attrs) {
     var movesSet = HashSet<Pair<Int,Int>> ()
     var bitMap = BitmapFactory.decodeResource(resources, R.drawable.eat)
     var boardArray = BoardArray()
-    override fun onDraw(canvas: Canvas?) {
+    override fun onDraw(canvas: Canvas) {
         if(!clean) {
             var paddingX = 0f
             var paddingY = 0f
@@ -49,9 +49,9 @@ class ViewMoves(context:Context ,attrs: AttributeSet):View(context,attrs) {
                        var leftRect = firstCellX + scaleX * delta * (x.first - 1) - cellSize / 2
                        var bottomRect = topRect + cellSize
                        var rightRect = leftRect + cellSize
-                       canvas?.drawBitmap(bitMap,null,Rect(leftRect.toInt(),topRect.toInt(),rightRect.toInt(),bottomRect.toInt()),Paint())
+                       canvas.drawBitmap(bitMap,null,Rect(leftRect.toInt(),topRect.toInt(),rightRect.toInt(),bottomRect.toInt()),Paint())
                    } else {
-                       canvas?.drawCircle(firstCellX + scaleX * delta * (x.first - 1), firstCellY + scaleY * delta * (x.second - 1),20f,paint)
+                       canvas.drawCircle(firstCellX + scaleX * delta * (x.first - 1), firstCellY + scaleY * delta * (x.second - 1),20f,paint)
                    }
 
 

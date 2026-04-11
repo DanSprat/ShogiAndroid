@@ -10,3 +10,14 @@ enum class PromotableIDs(var commonUP:Int,var commonDown:Int,var promotedUP:Int,
     ROOK(R.drawable.rook_0,R.drawable.rook_1,R.drawable.p_rook_0,R.drawable.p_rook_1),
     BISHOP(R.drawable.bishop_0,R.drawable.bishop_1,R.drawable.p_bishop_0,R.drawable.p_bishop_1),
 }
+
+internal object PromotablePieceIds {
+    val bySimpleClassName: Map<String, PromotableIDs> = mapOf(
+        "Pawn" to PromotableIDs.PAWN,
+        "Lance" to PromotableIDs.LANCE,
+        "Knight" to PromotableIDs.KNIGHT,
+        "Silver" to PromotableIDs.SILVER,
+        "Bishop" to PromotableIDs.BISHOP,
+        "Rook" to PromotableIDs.ROOK
+    )
+}

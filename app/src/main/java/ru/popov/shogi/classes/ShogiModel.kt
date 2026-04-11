@@ -1,6 +1,5 @@
 package ru.popov.shogi.classes
 
-import android.app.usage.UsageEvents
 import android.content.Context
 import android.graphics.*
 import android.util.Log
@@ -10,6 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RelativeLayout
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.*
 import okhttp3.*
 import ru.popov.shogi.R
@@ -17,6 +18,10 @@ import ru.popov.shogi.classes.figures.*
 
 class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, var noteSize:Int, var separateLineSize:Int, var layout: RelativeLayout,
                  private var context: Context,private var layoutParams: ViewGroup.LayoutParams,var topBoard: Float,var leftBoard: Float) {
+
+    private val modelScope: CoroutineScope =
+        (context as? AppCompatActivity)?.lifecycleScope
+            ?: CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val figuresOnBoard:MutableSet<Figure> = mutableSetOf()
     private val handWhite:ArrayList<Figure> = ArrayList()
     private val handBlack:ArrayList<Figure> = ArrayList()
@@ -30,18 +35,6 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
     private var turn:Side = Side.WHITE
     private lateinit var webSocket:WebSocket
     private var boardShogi:BoardArray = BoardArray()
-
-    companion object {
-        private var promID:HashMap<String,PromotableIDs> = HashMap()
-        init {
-            promID["Pawn"] = PromotableIDs.PAWN
-            promID["Lance"] = PromotableIDs.LANCE
-            promID["Knight"] = PromotableIDs.KNIGHT
-            promID["Silver"] = PromotableIDs.SILVER
-            promID["Bishop"] = PromotableIDs.BISHOP
-            promID["Rook"] = PromotableIDs.ROOK
-        }
-    }
 
     init {
 
@@ -75,94 +68,8 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
         }
     }
 
-    private suspend fun searchRoots(figure: Figure):HashSet<Pair<Int,Int>> {
-        val moves:HashSet<Pair<Int,Int>> = HashSet()
-        var currentX = figure.col
-        var currentY = figure.row
-        val rules = figure.rules
-        var list:ArrayList<Pair<Int,Int>> = ArrayList()
-        if(figure.eaten){
-            when(figure::class.java.simpleName) {
-                "Pawn" -> {
-                    for (i in 1..9){
-                        for (j in 1..9){
-                            if (j==1 || j ==9){
-                                if (j==1 && figure.side == Side.BLACK)
-                                    continue
-                                if (j==9 && figure.side == Side.WHITE)
-                                    continue
-                            }
-                            var it = boardShogi[i,j]
-                            if (it != null){
-                                if (it.javaClass.simpleName == "Pawn" && !it.promoted && it.side == figure.side){
-                                    list.clear()
-                                    break
-                               }
-                           } else {
-                               list.add(Pair(i,j))
-                           }
-                        }
-                        list.forEach { moves.add(it) }
-                    }
-                }
-                "Knight"-> {
-                    var k = 1
-                    var m = 9
-                    if (figure.side == Side.WHITE) m =7
-                    else k = 3
-                    for (i in 1..9){
-                        for (j in k..m){
-                            if (boardShogi[i,j] == null) {
-                                moves.add(Pair(i,j))
-                            }
-                        }
-                    }
-                }
-                "Lance" -> {
-                    var k = 1
-                    var m = 9
-                    if (figure.side == Side.WHITE) m = 8
-                    else k = 2
-                    for (i in 1..9){
-                        for (j in k..m){
-                            if (boardShogi[i,j] == null) {
-                                moves.add(Pair(i,j))
-                            }
-                        }
-                    }
-                }
-                else -> {
-                    for (i in 1..9)
-                        for (j in 1..9)
-                            if (boardShogi[i,j] == null)
-                                moves.add(Pair(i,j))
-                }
-            }
-        } else {
-            for (i in 0 until rules.size){
-                val vectorMove = rules[i]
-                var x = vectorMove.vector.first
-                var y = vectorMove.vector.second
-                var length = 0
-                var isEat = false
-                for(j in 0 until vectorMove.length){
-                    if (currentX + x <1 || currentX + x > 9 || currentY + y < 1 || currentY + y >9 ||
-                        boardShogi[currentX + x,currentY + y]?.side == figure.side || isEat) break
-
-                    boardShogi[currentX + x, currentY + y]?.let {
-                        isEat = it.side != figure.side
-                    }
-                    currentX+=x
-                    currentY+=y
-                    moves.add(Pair(currentX,currentY))
-                    length++
-                }
-                currentX= figure.col
-                currentY = figure.row
-            }
-        }
-        return moves
-    }
+    private fun searchRoots(figure: Figure): HashSet<Pair<Int, Int>> =
+        figure.computeLegalMoveTargets(boardShogi)
 
 
     private fun movePieceAt(figure: Figure,row:Int,col:Int,x:Float,y:Float){
@@ -303,7 +210,7 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
                                 var relativeX = x - (startFirstCellX + plusX * delta)
                                 var relativeY = startFirstCellY - plusY * delta - y
                                 if (relativeX <= noteSize && relativeY <= noteSize){
-                                    runBlocking {
+                                    modelScope.launch {
                                         if(moves?.await()?.contains(Pair(plusX + 1, plusY + 1)) == true) {
                                             var coordinateX = startFirstCellX + plusX * delta  + noteSize / 2  - layoutParams.width / 2
                                             var coordinateY = startFirstCellY - plusY * delta  - noteSize / 2  - layoutParams.height / 2
@@ -324,7 +231,7 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
                                                     oldY = figure.pieceImage.y
                                                     chooseToPromoteNew.x = coordinateX
                                                     chooseToPromoteNew.y = coordinateY
-                                                    promID[figure::class.simpleName]?.let {
+                                                    PromotablePieceIds.bySimpleClassName[figure::class.java.simpleName]?.let {
                                                         if (figure.side == Side.BLACK) {
                                                             chooseToPromoteNew.setImageResource(it.promotedDown)
                                                             chooseToPromoteOld.setImageResource(it.commonDown)
@@ -382,7 +289,7 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
                                 var relativeX = startFirstCellX - plusX * delta - x
                                 var relativeY = y - (startFirstCellY - plusY * delta)
                                 if (relativeX <= noteSize && relativeY <= noteSize){
-                                    GlobalScope.launch {
+                                    modelScope.launch {
                                         if(moves?.await()?.contains(Pair(plusX + 1, plusY + 1)) == true) {
                                             var coordinateX = startFirstCellX - plusX * delta  - noteSize / 2  - layoutParams.width / 2
                                             var coordinateY = startFirstCellY + plusY * delta  + noteSize / 2  - layoutParams.height / 2
@@ -403,7 +310,7 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
                                                     oldY = figure.pieceImage.y
                                                     chooseToPromoteNew.x = coordinateX
                                                     chooseToPromoteNew.y = coordinateY
-                                                    promID[figure::class.simpleName]?.let {
+                                                    PromotablePieceIds.bySimpleClassName[figure::class.java.simpleName]?.let {
                                                         if (figure.side == Side.WHITE) {
                                                             chooseToPromoteNew.setImageResource(it.promotedDown)
                                                             chooseToPromoteOld.setImageResource(it.commonDown)
@@ -490,7 +397,7 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
                     0f,0f,0f,0f,0f)
 
                 (v as ImageView).colorFilter = ColorMatrixColorFilter(ColorMatrix(matrixArr))
-                GlobalScope.launch {
+                modelScope.launch {
                     Log.i("COR","Start coroutine")
                     moves = async { searchRoots((v as PieceView).figure) }
                     val waitMoves = moves?.await()
@@ -510,7 +417,7 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
                     if ((checkedView as PieceView).figure.side != (v as PieceView).figure.side){
                         var selected = checkedView as PieceView
                         var enemy = v
-                        runBlocking {
+                        modelScope.launch {
                             var w8Moves = moves?.await()
                             if(w8Moves?.contains(Pair(enemy.figure.col,enemy.figure.row)) == true) {
                                 var figure = (checkedView as PieceView).figure
@@ -532,7 +439,7 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
                                         oldY = figure.pieceImage.y
                                         chooseToPromoteNew.x = enemy.x
                                         chooseToPromoteNew.y = enemy.y
-                                        promID[figure::class.simpleName]?.let {
+                                        PromotablePieceIds.bySimpleClassName[figure::class.java.simpleName]?.let {
                                             if (figure.side == Side.WHITE && orientation == Orientation.REVERSE ||
                                                 figure.side == Side.BLACK && orientation == Orientation.NORMAL) {
                                                 chooseToPromoteNew.setImageResource(it.promotedDown)

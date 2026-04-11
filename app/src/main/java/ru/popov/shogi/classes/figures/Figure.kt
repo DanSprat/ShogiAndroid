@@ -22,7 +22,7 @@ abstract class Figure {
     abstract var row:Int
     abstract var col:Int
     abstract var pieceImage: PieceView
-    protected abstract var name: FigureName
+    abstract var name: FigureName
     protected abstract var abbrName: String
     abstract var rules: ShogiRules
     abstract var side: Side
