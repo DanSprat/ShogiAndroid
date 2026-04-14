@@ -7,4 +7,55 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- База: тёплый уголь / индиго (окно, низ градиента, nav bar) -->
+    <color name="time_gradient_end">#FF0D0F14</color>
+    <color name="time_screen_bg">#FF12141A</color>
+    <color name="time_gradient_start">#FF1E2129</color>
+    <color name="time_gradient_center">#FF151820</color>
+
+    <!-- Плитки времени: тёплый «орех», не холодный серый -->
+    <color name="time_tile_bg">#FF2A2724</color>
+    <color name="time_tile_bg_elevated">#FF35302C</color>
+    <color name="time_tile_text_primary">#FFF5F0E8</color>
+    <color name="time_tile_text_secondary">#FFC4B8A8</color>
+    <color name="time_screen_header_muted">#FF9A9088</color>
+
+    <!-- Акцент: приглушённый янтарь / сусурэ-и (вместо неонового оранжевого) -->
+    <color name="time_tile_accent_orange">#FFD4A05C</color>
+    <color name="time_tile_accent_bar">#FFD4A05C</color>
+    <color name="time_tile_custom_stroke">#FFE8C078</color>
+    <color name="time_tile_ripple">#48D4A05C</color>
+    <color name="time_tile_stroke">#3AE8DCC8</color>
+    <color name="time_tile_stroke_strong">#5CE8DCC8</color>
+
+    <!-- Пресеты времени (как в референсе — зелёный выбранный) -->
+    <color name="time_preset_chip_selected">#FF43A047</color>
+    <color name="time_seek_track">#FF252320</color>
+    <color name="time_seek_thumb">#FFC4B8A8</color>
+
+    <!-- Часы на доске -->
+    <color name="clock_active">#FFE8C078</color>
+    <color name="clock_idle">#FF8A8580</color>
+    <color name="clock_waiting">#FFB0A090</color>
+
+    <!-- Главное меню и общие подписи -->
+    <color name="shogi_amber">#FFD4A05C</color>
+    <color name="shogi_amber_dark">#FF8B6538</color>
+
+    <color name="menu_text_primary">#FFF5F0E8</color>
+    <color name="menu_text_muted">#FFB0A699</color>
+    <color name="menu_outline">#48E8DCC8</color>
+    <color name="menu_button_fill">#FFC9A04A</color>
+    <color name="menu_button_fill_text">#FF1A1510</color>
+    <color name="menu_legacy_photo_overlay">#4D000000</color>
+    <!-- Заголовок меню: тёплый «пергамент» под Holtwood -->
+    <color name="menu_title_on_plate">#FFF2E8D8</color>
+    <color name="menu_button_secondary">#FF2A2832</color>
+    <color name="menu_button_secondary_text">#FFF5F0E8</color>
+    <color name="menu_button_secondary_stroke">#7AD4A05C</color>
+    <color name="menu_button_primary_ripple">#45FFFFFF</color>
+    <color name="menu_button_secondary_ripple">#38FFFFFF</color>
+
+    <color name="game_over_scrim">#B3000000</color>
 </resources>

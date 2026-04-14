@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="40.5dp"
+    android:height="48.8dp"
+    android:viewportWidth="40.5"
+    android:viewportHeight="48.8">
+    <!-- Контур пентагона фигуры — тёплый тёмный «лак» -->
+    <path
+        android:pathData="M0,49L6.8,4.2L20,0l13.6,4l6.8,44.6L0,49z"
+        android:fillColor="#00000000"
+        android:strokeColor="#8A5A2A"
+        android:strokeWidth="1.05" />
+</vector>

@@ -2,22 +2,43 @@ package ru.popov.shogi.classes
 
 import android.content.Context
 import android.graphics.*
+import android.os.SystemClock
 import android.util.Log
 import android.view.MotionEvent
 import android.view.MotionEvent.ACTION_DOWN
+import android.view.SoundEffectConstants
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RelativeLayout
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.*
 import okhttp3.*
+import androidx.core.content.ContextCompat
 import ru.popov.shogi.R
+import android.os.Handler
+import android.os.Looper
 import ru.popov.shogi.classes.figures.*
 
 class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, var noteSize:Int, var separateLineSize:Int, var layout: RelativeLayout,
-                 private var context: Context,private var layoutParams: ViewGroup.LayoutParams,var topBoard: Float,var leftBoard: Float) {
+                 private var context: Context,private var layoutParams: ViewGroup.LayoutParams,var topBoard: Float,var leftBoard: Float,
+                 private val timeControl: TimeControl? = null,
+                 private val clockBlackView: TextView? = null,
+                 private val clockWhiteView: TextView? = null,
+                 /** Проигравшая сторона; второй аргумент — true, если король снят с доски. */
+                 private val onGameOver: ((Side, Boolean) -> Unit)? = null) {
+
+    private var gameOverFlag = false
+    private var whiteTimeMillis = 0L
+    private var blackTimeMillis = 0L
+    private var activeClock: Side = Side.WHITE
+    private var clockRunning = false
+    private var lastClockRealtime = 0L
+    private val clockHandler = Handler(Looper.getMainLooper())
+    private val clockTickRunnable = Runnable { handleClockTick() }
 
     private val modelScope: CoroutineScope =
         (context as? AppCompatActivity)?.lifecycleScope
@@ -73,7 +94,11 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
 
 
     private fun movePieceAt(figure: Figure,row:Int,col:Int,x:Float,y:Float){
-        boardShogi[col,row]?.also {
+        val captured = boardShogi[col, row]
+        val kingCaptureLoser =
+            if (captured?.name == FigureName.KING) captured.side else null
+
+        captured?.also {
             it.changeSide()
             it.row = 0
             it.col = 0
@@ -108,6 +133,12 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
         figure.pieceImage.x = x
         figure.pieceImage.y = y
         figure.pieceImage.colorFilter = ColorMatrixColorFilter(ColorMatrix())
+        onMoveCompletedClock(figure)
+        layout.playSoundEffect(SoundEffectConstants.CLICK)
+
+        if (kingCaptureLoser != null) {
+            onKingCapturedGameOver(kingCaptureLoser)
+        }
     }
 
     private fun reset(){
@@ -141,6 +172,8 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
         var moveInfo:MoveInfo? = null
         var chooseToPromoteOld:ImageView = ImageView(context)
         var chooseToPromoteNew:ImageView = ImageView(context)
+        chooseToPromoteOld.isSoundEffectsEnabled = false
+        chooseToPromoteNew.isSoundEffectsEnabled = false
         chooseToPromoteOld.setOnClickListener {
             checkedView = null
             startPromoting = false
@@ -196,6 +229,7 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
         var oldY:Float = 0f
 
         val touchBoard:View.OnTouchListener = View.OnTouchListener { v, event ->
+            if (gameOverFlag) return@OnTouchListener true
             when(event.action) {
                 ACTION_DOWN -> {
                     if(checkedView != null && !startPromoting) {
@@ -368,6 +402,7 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
         layout.findViewById<ShogiView>(R.id.shogi_view).setOnTouchListener(touchBoard)
 
         val touchListener:View.OnClickListener = View.OnClickListener { v->
+            if (gameOverFlag) return@OnClickListener
             if ((v as PieceView).figure.side == turn && (checkedView == null || checkedView != v && (checkedView as PieceView).figure.side == v.figure.side)  ) {
                 if(checkedView != null && checkedView != v) {
                         layout.findViewById<ViewMoves>(R.id.available_moves).also {
@@ -562,6 +597,142 @@ class ShogiModel(var orientation: Orientation, var top:Float, var left:Float, va
         boardShogi[2,2] = Bishop(Side.WHITE,2,2,false,appInfo,firstCellX + scaleX * 1 *delta,firstCellY+scaleY*1*delta,orientation,touchListener,false)
         boardShogi[8,8] = Bishop(Side.BLACK,8,8,false,appInfo,firstCellX + scaleX * 7 *delta,firstCellY+scaleY*7*delta,orientation,touchListener,false)
 
+        initializeClockAtGameStart()
+    }
+
+    private fun initializeClockAtGameStart() {
+        val tc = timeControl
+        if (tc == null || !tc.enabled) {
+            clockBlackView?.visibility = View.GONE
+            clockWhiteView?.visibility = View.GONE
+            clockHandler.removeCallbacks(clockTickRunnable)
+            return
+        }
+        gameOverFlag = false
+        clockRunning = false
+        whiteTimeMillis = tc.initialMillis
+        blackTimeMillis = tc.initialMillis
+        activeClock = Side.WHITE
+        lastClockRealtime = SystemClock.elapsedRealtime()
+        clockBlackView?.visibility = View.VISIBLE
+        clockWhiteView?.visibility = View.VISIBLE
+        syncClockViews()
+        clockHandler.removeCallbacks(clockTickRunnable)
+    }
+
+    private fun onMoveCompletedClock(figure: Figure) {
+        val tc = timeControl
+        if (tc == null || !tc.enabled || gameOverFlag) return
+        when (figure.side) {
+            Side.WHITE -> whiteTimeMillis += tc.incrementMillis
+            Side.BLACK -> blackTimeMillis += tc.incrementMillis
+        }
+        activeClock = turn
+        lastClockRealtime = SystemClock.elapsedRealtime()
+        syncClockViews()
+        if (!clockRunning) {
+            clockRunning = true
+            clockHandler.removeCallbacks(clockTickRunnable)
+            clockHandler.post(clockTickRunnable)
+        }
+    }
+
+    private fun handleClockTick() {
+        val tc = timeControl
+        if (tc == null || !tc.enabled || gameOverFlag || !clockRunning) return
+        val now = SystemClock.elapsedRealtime()
+        val delta = (now - lastClockRealtime).coerceAtLeast(0L)
+        lastClockRealtime = now
+        when (activeClock) {
+            Side.WHITE -> {
+                whiteTimeMillis -= delta
+                if (whiteTimeMillis <= 0) {
+                    whiteTimeMillis = 0
+                    syncClockViews()
+                    onTimeOut(Side.WHITE)
+                    return
+                }
+            }
+            Side.BLACK -> {
+                blackTimeMillis -= delta
+                if (blackTimeMillis <= 0) {
+                    blackTimeMillis = 0
+                    syncClockViews()
+                    onTimeOut(Side.BLACK)
+                    return
+                }
+            }
+        }
+        syncClockViews()
+        clockHandler.postDelayed(clockTickRunnable, 100L)
+    }
+
+    private fun syncClockViews() {
+        clockBlackView?.text = formatClock(blackTimeMillis)
+        clockWhiteView?.text = formatClock(whiteTimeMillis)
+        val tc = timeControl
+        if (tc == null || !tc.enabled) return
+        val waitCol = ContextCompat.getColor(context, R.color.clock_waiting)
+        if (!clockRunning) {
+            clockBlackView?.setTextColor(waitCol)
+            clockWhiteView?.setTextColor(waitCol)
+            return
+        }
+        val activeCol = ContextCompat.getColor(context, R.color.clock_active)
+        val idleCol = ContextCompat.getColor(context, R.color.clock_idle)
+        clockBlackView?.setTextColor(if (activeClock == Side.BLACK) activeCol else idleCol)
+        clockWhiteView?.setTextColor(if (activeClock == Side.WHITE) activeCol else idleCol)
+    }
+
+    private fun formatClock(ms: Long): String {
+        val s = (ms / 1000L).coerceAtLeast(0L)
+        val m = s / 60L
+        val sec = s % 60L
+        return "%d:%02d".format(m, sec)
+    }
+
+    private fun onKingCapturedGameOver(losing: Side) {
+        if (gameOverFlag) return
+        gameOverFlag = true
+        clockHandler.removeCallbacks(clockTickRunnable)
+        val cb = onGameOver
+        if (cb != null) {
+            cb(losing, true)
+        } else {
+            val loserName = when (losing) {
+                Side.WHITE -> context.getString(R.string.side_white)
+                Side.BLACK -> context.getString(R.string.side_black)
+            }
+            Toast.makeText(
+                context,
+                context.getString(R.string.game_over_message_king, loserName),
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    private fun onTimeOut(losing: Side) {
+        if (gameOverFlag) return
+        gameOverFlag = true
+        clockHandler.removeCallbacks(clockTickRunnable)
+        val cb = onGameOver
+        if (cb != null) {
+            cb(losing, false)
+        } else {
+            val loserName = when (losing) {
+                Side.WHITE -> context.getString(R.string.side_white)
+                Side.BLACK -> context.getString(R.string.side_black)
+            }
+            Toast.makeText(
+                context,
+                context.getString(R.string.time_out_message, loserName),
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    fun stopGameClock() {
+        clockHandler.removeCallbacks(clockTickRunnable)
     }
 
     fun createImageViews(context:Context,left:Int,bottom:Int,delta:Int,size:Int):ArrayList<ImageView> {

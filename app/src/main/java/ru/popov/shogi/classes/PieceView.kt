@@ -12,6 +12,9 @@ import ru.popov.shogi.classes.figures.Figure
 
 class PieceView(context:Context,var figure:Figure):androidx.appcompat.widget.AppCompatImageView(context) {
 
+    init {
+        isSoundEffectsEnabled = false
+    }
 
     override fun setOnClickListener(l: OnClickListener?) {
         super.setOnClickListener(l)

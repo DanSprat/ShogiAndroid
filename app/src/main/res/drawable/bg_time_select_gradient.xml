@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:dither="true"
+    android:shape="rectangle">
+    <gradient
+        android:angle="145"
+        android:centerColor="@color/time_gradient_center"
+        android:endColor="@color/time_gradient_end"
+        android:startColor="@color/time_gradient_start"
+        android:type="linear" />
+</shape>

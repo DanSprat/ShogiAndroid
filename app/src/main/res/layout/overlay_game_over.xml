@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/game_over_overlay"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/game_over_scrim"
+    android:clickable="true"
+    android:elevation="32dp"
+    android:focusable="true"
+    android:visibility="gone">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginHorizontal="28dp"
+        app:cardBackgroundColor="#FF2C2C36"
+        app:cardCornerRadius="18dp"
+        app:cardElevation="12dp"
+        app:strokeColor="#35FFFFFF"
+        app:strokeWidth="1dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="22dp"
+            android:paddingTop="22dp"
+            android:paddingBottom="18dp">
+
+            <TextView
+                android:id="@+id/game_over_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:text="@string/game_over_title_time"
+                android:textColor="@color/menu_text_primary"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/game_over_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:lineSpacingMultiplier="1.15"
+                android:textColor="@color/menu_text_muted"
+                android:textSize="15sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/game_over_restart"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:minHeight="52dp"
+                android:text="@string/game_over_restart"
+                android:textAllCaps="false"
+                android:textColor="@color/menu_button_fill_text"
+                android:textSize="15sp"
+                app:backgroundTint="@color/menu_button_fill"
+                app:cornerRadius="14dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/game_over_main_menu"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:minHeight="52dp"
+                android:text="@string/game_over_main_menu"
+                android:textAllCaps="false"
+                android:textColor="@color/menu_text_primary"
+                android:textSize="15sp"
+                app:cornerRadius="14dp"
+                app:strokeColor="@color/menu_outline"
+                app:strokeWidth="1dp" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</FrameLayout>

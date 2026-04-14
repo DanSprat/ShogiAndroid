@@ -1,5 +1,27 @@
 <resources>
     <string name="app_name">Shogi</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="menu_title">The Shogi Game</string>
+    <string name="menu_play_local">На одном устройстве</string>
+    <string name="menu_play_online">Онлайн</string>
+    <string name="menu_logo_desc">Логотип — слон</string>
+    <string name="time_control_title">Контроль времени</string>
+    <string name="time_control_subtitle">Ползунки или пресет, затем «Играть»</string>
+    <string name="time_minutes_per_game">Минут на партию</string>
+    <string name="time_seconds_increment_per_move">Добавление секунд на ход</string>
+    <string name="time_preset_custom">Своя игра</string>
+    <string name="custom_time_hint">0 мин и 0 сек прибавки — игра без ограничения по времени.</string>
+    <string name="minutes">Минуты в партии</string>
+    <string name="seconds_per_move">Секунд прибавки за ход</string>
+    <string name="time_out_message">Время вышло. %1$s проиграли.</string>
+    <string name="side_white">Белые</string>
+    <string name="side_black">Чёрные</string>
+    <string name="custom_time_dialog_title">Своя игра</string>
+    <string name="play">Играть</string>
+    <string name="cancel">Отмена</string>
+    <string name="game_over_title_time">Время вышло</string>
+    <string name="game_over_title_king">Король взят</string>
+    <string name="game_over_message_time">%1$s проиграли по времени.</string>
+    <string name="game_over_message_king">%1$s проиграли: король снят с доски.</string>
+    <string name="game_over_restart">Играть заново</string>
+    <string name="game_over_main_menu">В главное меню</string>
 </resources>

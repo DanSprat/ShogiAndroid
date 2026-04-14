@@ -954,15 +954,9 @@ class King(override var side: Side, override var row: Int, override var col: Int
         pieceView.x = x
         pieceView.y = y
 
-        this.name = FigureName.TOKIN
-
-        this.name = Gold.name
-        abbrName = Gold.abbrName
-        rules = if (side == Side.WHITE) {
-            ShogiRules.KING
-        } else {
-            ShogiRules.KING
-        }
+        this.name = FigureName.KING
+        abbrName = King.abbrName
+        rules = ShogiRules.KING
         pieceImage = pieceView
         appInfo.layout.addView(pieceView)
     }

@@ -6,6 +6,7 @@ import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
 import android.util.Log
 import android.view.MotionEvent
+import android.view.SoundEffectConstants
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -125,6 +126,7 @@ class ShogiModelMultiplayer(var orientation: Orientation, var top:Float, var lef
         figure.pieceImage.x = x
         figure.pieceImage.y = y
         figure.pieceImage.colorFilter = ColorMatrixColorFilter(ColorMatrix())
+        layout.playSoundEffect(SoundEffectConstants.CLICK)
     }
 
     private fun reset(){
@@ -152,6 +154,8 @@ class ShogiModelMultiplayer(var orientation: Orientation, var top:Float, var lef
         var moveInfo:MoveInfo? = null
         var chooseToPromoteOld: ImageView = ImageView(context)
         var chooseToPromoteNew: ImageView = ImageView(context)
+        chooseToPromoteOld.isSoundEffectsEnabled = false
+        chooseToPromoteNew.isSoundEffectsEnabled = false
         chooseToPromoteOld.setOnClickListener {
             checkedView = null
             startPromoting = false

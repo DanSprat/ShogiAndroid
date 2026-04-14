@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Светлая тема для NumberPicker в диалоге (цифры не сливаются с фоном) -->
+    <style name="CustomTimeNumberPickerTheme" parent="ThemeOverlay.MaterialComponents.Light">
+        <item name="android:textColorPrimary">#DE1A1C22</item>
+        <item name="android:textColorSecondary">#8A1A1C22</item>
+        <item name="colorControlNormal">#FFD4A05C</item>
+    </style>
+</resources>

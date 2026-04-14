@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="time_grid_spacing">8dp</dimen>
+    <dimen name="time_chip_margin_end">8dp</dimen>
+    <dimen name="time_tile_min_height">78dp</dimen>
+    <!-- Было: 12dp padding контента + 20dp под сетку; суммарно для insets снизу -->
+    <dimen name="time_select_content_bottom_base">32dp</dimen>
+    <dimen name="menu_bottom_margin">40dp</dimen>
+</resources>
